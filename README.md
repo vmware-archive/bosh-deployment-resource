@@ -1,34 +1,28 @@
 # BOSH Deployment Resource
 
-An output only resource (at the moment) that will deploy an application to a
-Cloud Foundry deployment.
+An output only resource (at the moment) that will upload stemcells and releases
+and then deploy them.
 
 ## Source Configuration
 
-* `api`: *Required.* The address of the Cloud Controller in the Cloud Foundry
+* `target`: *Required.* The address of the BOSH director which will be used for
   deployment.
-* `username`: *Required.* The username used to authenticate.
-* `password`: *Required.* The password used to authenticate.
-* `organization`: *Required.* The organization to push the application to.
-* `space`: *Required.* The space to push the application to.
-* `skip_cert_check`: *Optional.* Check the validity of the CF SSL cert.
-  Defaults to `false`.
+* `username`: *Required.* The username for the BOSH director.
+* `password`: *Required.* The password for the BOSH director.
 
 ## Behaviour
 
-### `out`: Deploy an application to a Cloud Foundry
+### `out`: Deploy a BOSH deployment
 
-Pushes an application to the Cloud Foundry detailed in the source
-configuration. A [manifest][cf-manifests] that describes the application must
-be specified.
-
-[cf-manifests]: http://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html
+This will upload any given stemcells and releases, lock them down in the
+deployment manifest and then deploy.
 
 #### Parameters
 
-* `manifest`: *Required.* Path to a application manifest file.
-* `path`: *Optional.* Path to the application to push. If this isn't set then
-  it will be read from the manifest instead.
-* `current_app_name`: *Optional.* This should be the name of the application
-  that this will re-deploy over. If this is set the resource will perform a
-  zero-downtime deploy.
+* `manifest`: *Required.* Path to a BOSH deployment manifest file.
+* `stemcells`: *Required.*  An array of globs that should point to where the
+  stemcells used in the deployment can be found.
+* `releases`: *Required.* An array of globs that should point to where the
+  releases used in the deployment can be found.
+* `rebase`: *Optional.* A boolean specifying whether or not the releases should
+  be rebased upon upload.
