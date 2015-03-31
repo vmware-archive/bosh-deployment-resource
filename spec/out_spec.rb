@@ -5,8 +5,6 @@ require "json"
 require "open3"
 require "tmpdir"
 
-require 'bosh_deployment_resource'
-
 describe "Out Command" do
   let(:bosh) { instance_double(BoshDeploymentResource::Bosh) }
   let(:command) { BoshDeploymentResource::OutCommand.new(bosh) }

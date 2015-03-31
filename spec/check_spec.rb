@@ -3,8 +3,6 @@ require "spec_helper"
 require "json"
 require "open3"
 
-require 'bosh_deployment_resource'
-
 describe "Check Command" do
   it "outputs and empty json list" do
     stdout, _, status = Open3.capture3("bdr_check")
