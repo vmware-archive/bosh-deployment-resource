@@ -19,6 +19,10 @@ module BoshDeploymentResource
       bosh(command)
     end
 
+    def deploy(manifest_path)
+      bosh("-d #{manifest_path} deploy")
+    end
+
     private
 
     attr_reader :target, :username, :password
@@ -31,7 +35,7 @@ module BoshDeploymentResource
       pid = Process.spawn(command, out: :out, err: :err)
       Process.wait(pid)
 
-      raise "command '#{command} failed!" unless $?.success
+      raise "command '#{command} failed!" unless $?.success?
     end
   end
 end

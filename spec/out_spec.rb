@@ -6,8 +6,9 @@ require "open3"
 require "tmpdir"
 
 describe "Out Command" do
-  let(:bosh) { instance_double(BoshDeploymentResource::Bosh) }
-  let(:command) { BoshDeploymentResource::OutCommand.new(bosh) }
+  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, use_stemcell: nil, use_release: nil) }
+  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil) }
+  let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest) }
 
   def touch(*paths)
     path = File.join(paths)
@@ -32,8 +33,7 @@ describe "Out Command" do
   end
 
   before do
-    allow(bosh).to receive(:upload_stemcell)
-    allow(bosh).to receive(:upload_release)
+    allow(manifest).to receive(:write!).and_return("/tmp/awesome/manifest.yml")
   end
 
   let(:rebase) { false }
@@ -131,7 +131,18 @@ describe "Out Command" do
       end
     end
 
-    it "generates a new manifest (with locked down versions) and deploys it"
+    it "generates a new manifest (with locked down versions) and deploys it" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(manifest).to receive(:use_release)
+        expect(manifest).to receive(:use_stemcell)
+
+        expect(bosh).to receive(:deploy).with("/tmp/awesome/manifest.yml")
+
+        command.run(working_dir, request)
+      end
+    end
   end
 
   context "with invalid inputs" do

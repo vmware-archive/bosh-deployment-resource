@@ -1,24 +1,34 @@
 module BoshDeploymentResource
   class OutCommand
-    def initialize(bosh)
+    def initialize(bosh, manifest)
       @bosh = bosh
+      @manifest = manifest
     end
 
     def run(working_dir, request)
       validate! request
 
       stemcells(working_dir, request).each do |stemcell_path|
+        stemcell = BoshStemcell.new(stemcell_path)
+        manifest.use_stemcell(stemcell)
+
         bosh.upload_stemcell(stemcell_path)
       end
 
       releases(working_dir, request).each do |release_path|
+        release = BoshRelease.new(release_path)
+        manifest.use_release(release)
+
         bosh.upload_release(release_path, rebase_releases?(request))
       end
+
+      new_manifest_path = manifest.write!
+      bosh.deploy(new_manifest_path)
     end
 
     private
 
-    attr_reader :bosh
+    attr_reader :bosh, :manifest
 
     def validate!(request)
       ["target", "username", "password"].each do |field|

@@ -1,3 +1,29 @@
 #!/usr/bin/env ruby
 
+require "json"
+
 require 'bosh_deployment_resource'
+
+working_dir = ARGV[0]
+request = JSON.parse(STDIN.read)
+
+source = request.fetch("source")
+params = request.fetch("params")
+
+bosh = BoshDeploymentResource::Bosh.new(
+  source.fetch("target"),
+  source.fetch("username"),
+  source.fetch("password")
+)
+manifest = BoshDeploymentResource::BoshManifest.new(
+  File.expand_path(params.fetch("manifest"), working_dir)
+)
+
+command = BoshDeploymentResource::OutCommand.new(bosh, manifest)
+
+begin
+  command.run(working_dir, request)
+rescue => e
+  STDERR.puts e.message
+  exit 1
+end
