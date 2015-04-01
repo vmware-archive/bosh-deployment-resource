@@ -1,0 +1,11 @@
+---
+platform: linux
+
+image: docker:///ruby#2.1
+
+inputs:
+- name: bosh-deployment-resource
+  path: .
+
+run:
+  path: ci/test.sh
