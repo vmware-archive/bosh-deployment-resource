@@ -48,11 +48,16 @@ module BoshDeploymentResource
     end
 
     def bosh(command)
-      run("bosh -n -t #{target} -u #{username} -p #{password} #{command}")
+      run(
+        "bosh -n #{command}",
+        "BOSH_TARGET" => target,
+        "BOSH_USER" => username,
+        "BOSH_PASSWORD" => password,
+      )
     end
 
-    def run(command)
-      pid = Process.spawn(command, out: :err, err: :err)
+    def run(command, env={})
+      pid = Process.spawn(env, command, out: :err, err: :err)
       Process.wait(pid)
 
       raise "command '#{command} failed!" unless $?.success?
