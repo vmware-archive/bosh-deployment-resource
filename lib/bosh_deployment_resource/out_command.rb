@@ -28,6 +28,8 @@ module BoshDeploymentResource
         manifest.use_release(release)
 
         bosh.upload_release(release_path)
+
+        releases << release
       end
 
       new_manifest_path = manifest.write!
@@ -39,8 +41,8 @@ module BoshDeploymentResource
           "timestamp" => time.utc.iso8601
         },
         "metadata" =>
-          stemcells.map { |s| { "name" => "stemcell #{s.name}", "version" => s.version } } +
-          releases.map { |r| { "name" => "release #{r.name}", "version" => r.version } }
+          stemcells.map { |s| { "name" => "stemcell #{s.name}", "value" => s.version } } +
+          releases.map { |r| { "name" => "release #{r.name}", "value" => r.version } }
       }
 
       writer.puts response.to_json
