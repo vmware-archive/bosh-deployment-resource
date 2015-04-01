@@ -27,7 +27,7 @@ module BoshDeploymentResource
         release = BoshRelease.new(release_path)
         manifest.use_release(release)
 
-        bosh.upload_release(release_path, rebase_releases?(request))
+        bosh.upload_release(release_path)
       end
 
       new_manifest_path = manifest.write!
@@ -66,10 +66,6 @@ module BoshDeploymentResource
 
       raise "stemcells must be an array of globs" unless enumerable?(request.fetch("params").fetch("stemcells"))
       raise "releases must be an array of globs" unless enumerable?(request.fetch("params").fetch("releases"))
-    end
-
-    def rebase_releases?(request)
-      request.fetch("params").fetch("rebase", false)
     end
 
     def find_stemcells(working_dir, request)

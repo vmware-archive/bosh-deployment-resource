@@ -15,11 +15,8 @@ module BoshDeploymentResource
       bosh("upload stemcell #{path} --skip-if-exists")
     end
 
-    def upload_release(path, rebase=false)
-      command = "upload release #{path} --skip-if-exists"
-      command << " --rebase" if rebase
-
-      bosh(command)
+    def upload_release(path)
+      bosh("upload release #{path} --skip-if-exists")
     end
 
     def deploy(manifest_path)

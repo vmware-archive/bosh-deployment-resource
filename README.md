@@ -25,5 +25,3 @@ deployment manifest and then deploy.
   stemcells used in the deployment can be found.
 * `releases`: *Required.* An array of globs that should point to where the
   releases used in the deployment can be found.
-* `rebase`: *Optional.* A boolean specifying whether or not the releases should
-  be rebased upon upload.

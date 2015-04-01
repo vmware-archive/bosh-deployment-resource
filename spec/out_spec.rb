@@ -44,7 +44,6 @@ describe "Out Command" do
     allow(manifest).to receive(:write!).and_return("/tmp/awesome/manifest.yml")
   end
 
-  let(:rebase) { false }
   let(:request) {
     {
       "source" => {
@@ -55,7 +54,6 @@ describe "Out Command" do
       },
       "params" => {
         "manifest" => "manifest/deployment.yml",
-        "rebase" => rebase,
         "stemcells" => [
           "stemcells/*.tgz"
         ],
@@ -100,9 +98,9 @@ describe "Out Command" do
         add_default_artefacts working_dir
 
         expect(bosh).to receive(:upload_release).
-          with(File.join(working_dir, "releases", "release.tgz"), false)
+          with(File.join(working_dir, "releases", "release.tgz"))
         expect(bosh).to receive(:upload_release).
-          with(File.join(working_dir, "releases", "other-release.tgz"), false)
+          with(File.join(working_dir, "releases", "other-release.tgz"))
 
         command.run(working_dir, request)
       end
@@ -120,23 +118,6 @@ describe "Out Command" do
         expect(bosh).to receive(:upload_release).exactly(2).times
 
         command.run(working_dir, request)
-      end
-    end
-
-    describe "when rebase is set to true" do
-      let(:rebase) { true }
-
-      it "respects the 'rebase' option for uploading releases" do
-        in_dir do |working_dir|
-          add_default_artefacts working_dir
-
-          expect(bosh).to receive(:upload_release).
-            with(File.join(working_dir, "releases", "release.tgz"), true)
-          expect(bosh).to receive(:upload_release).
-            with(File.join(working_dir, "releases", "other-release.tgz"), true)
-
-          command.run(working_dir, request)
-        end
       end
     end
 
