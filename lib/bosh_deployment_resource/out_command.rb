@@ -33,7 +33,7 @@ module BoshDeploymentResource
       new_manifest_path = manifest.write!
       bosh.deploy(new_manifest_path)
 
-      time = bosh.last_deployment_time("TODO: DEPLOYMENT NAME")
+      time = bosh.last_deployment_time(manifest.name)
       response = {
         "version" => {
           "timestamp" => time.utc.iso8601
@@ -51,8 +51,13 @@ module BoshDeploymentResource
     attr_reader :bosh, :manifest, :writer
 
     def validate!(request)
-      ["target", "username", "password"].each do |field|
+      ["target", "username", "password", "deployment"].each do |field|
         request.fetch("source").fetch(field) { raise "source must include '#{field}'" }
+      end
+
+      deployment_name = request.fetch("source").fetch("deployment")
+      if manifest.name != deployment_name
+        raise "given deployment name '#{deployment_name}' does not match manifest name '#{manifest.name}'"
       end
 
       ["manifest", "stemcells", "releases"].each do |field|

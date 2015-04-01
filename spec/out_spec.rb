@@ -7,7 +7,7 @@ require "tmpdir"
 require "stringio"
 
 describe "Out Command" do
-  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, use_stemcell: nil, use_release: nil) }
+  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, use_stemcell: nil, use_release: nil, name: "bosh-deployment") }
   let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, last_deployment_time: Time.at(1234567890)) }
   let(:response) { StringIO.new }
   let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest, response) }
@@ -50,7 +50,8 @@ describe "Out Command" do
       "source" => {
         "target" => "http://bosh.example.com",
         "username" => "bosh-username",
-        "password" => "bosh-password"
+        "password" => "bosh-password",
+        "deployment" => "bosh-deployment",
       },
       "params" => {
         "manifest" => "manifest/deployment.yml",
@@ -161,6 +162,7 @@ describe "Out Command" do
             "source" => {
               "username" => "bosh-user",
               "password" => "bosh-password",
+              "deployment" => "bosh-deployment",
             },
             "params" => {
               "manifest" => "deployment.yml",
@@ -172,6 +174,28 @@ describe "Out Command" do
       end
     end
 
+    it "errors if the given deployment name and the name in the manifest do not match" do
+      allow(manifest).to receive(:name).and_return("other-name")
+
+      in_dir do |working_dir|
+        expect do
+          command.run(working_dir, {
+            "source" => {
+              "target" => "http://bosh.example.com",
+              "username" => "bosh-user",
+              "password" => "bosh-password",
+              "deployment" => "bosh-deployment",
+            },
+            "params" => {
+              "manifest" => "deployment.yml",
+              "stemcells" => [],
+              "releases" => []
+            }
+          })
+        end.to raise_error /given deployment name 'bosh-deployment' does not match manifest name 'other-name'/
+      end
+    end
+
     it "requires a username" do
       in_dir do |working_dir|
         expect do
@@ -179,6 +203,7 @@ describe "Out Command" do
             "source" => {
               "target" => "http://bosh.example.com",
               "password" => "bosh-password",
+              "deployment" => "bosh-deployment",
             },
             "params" => {
               "manifest" => "deployment.yml",
@@ -197,6 +222,7 @@ describe "Out Command" do
             "source" => {
               "target" => "http://bosh.example.com",
               "username" => "bosh-username",
+              "deployment" => "bosh-deployment",
             },
             "params" => {
               "manifest" => "deployment.yml",
@@ -208,6 +234,25 @@ describe "Out Command" do
       end
     end
 
+    it "requires a deployment" do
+      in_dir do |working_dir|
+        expect do
+          command.run(working_dir, {
+            "source" => {
+              "target" => "http://bosh.example.com",
+              "username" => "bosh-username",
+              "password" => "bosh-password",
+            },
+            "params" => {
+              "manifest" => "deployment.yml",
+              "stemcells" => [],
+              "releases" => []
+            }
+          })
+        end.to raise_error /source must include 'deployment'/
+      end
+    end
+
     it "requires a manifest" do
       in_dir do |working_dir|
         expect do
@@ -216,6 +261,7 @@ describe "Out Command" do
               "target" => "http://bosh.example.com",
               "username" => "bosh-username",
               "password" => "bosh-password",
+              "deployment" => "bosh-deployment",
             },
             "params" => {
               "stemcells" => [],
@@ -235,6 +281,7 @@ describe "Out Command" do
                 "target" => "http://bosh.example.com",
                 "username" => "bosh-username",
                 "password" => "bosh-password",
+                "deployment" => "bosh-deployment",
               },
               "params" => {
                 "manifest" => "deployment.yml",
@@ -254,6 +301,7 @@ describe "Out Command" do
                 "target" => "http://bosh.example.com",
                 "username" => "bosh-username",
                 "password" => "bosh-password",
+                "deployment" => "bosh-deployment",
               },
               "params" => {
                 "manifest" => "deployment.yml",

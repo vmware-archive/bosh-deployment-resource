@@ -7,6 +7,10 @@ describe BoshDeploymentResource::BoshManifest do
 
   let(:resulting_manifest) { YAML.load_file(manifest.write!) }
 
+  it "can get the name of the deployment" do
+    expect(manifest.name).to eq("concourse")
+  end
+
   it "can replace the releases used in a manifest" do
     concourse = instance_double(BoshDeploymentResource::BoshRelease, name: "concourse", version: "1234")
     garden = instance_double(BoshDeploymentResource::BoshRelease, name: "garden-linux", version: "9876")

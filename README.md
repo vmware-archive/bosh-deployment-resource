@@ -9,6 +9,7 @@ and then deploy them.
   deployment.
 * `username`: *Required.* The username for the BOSH director.
 * `password`: *Required.* The password for the BOSH director.
+* `deployment`: *Required.* The name of the deployment.
 
 ## Behaviour
 

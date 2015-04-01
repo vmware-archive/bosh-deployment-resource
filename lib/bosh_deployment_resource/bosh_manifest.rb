@@ -7,6 +7,10 @@ module BoshDeploymentResource
       @manifest = YAML.load_file(path)
     end
 
+    def name
+      manifest.fetch("name")
+    end
+
     def use_release(release)
       manifest.fetch("releases").
         find { |r| r.fetch("name") == release.name }.
