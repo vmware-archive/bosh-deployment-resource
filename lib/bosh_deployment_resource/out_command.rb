@@ -41,8 +41,8 @@ module BoshDeploymentResource
           "timestamp" => time.utc.iso8601
         },
         "metadata" =>
-          stemcells.map { |s| { "name" => "stemcell #{s.name}", "value" => s.version } } +
-          releases.map { |r| { "name" => "release #{r.name}", "value" => r.version } }
+          stemcells.map { |s| { "name" => "stemcell", "value" => "#{s.name} v#{s.version}" } } +
+          releases.map { |r| { "name" => "release", "value" => "#{r.name} v#{r.version}" } }
       }
 
       writer.puts response.to_json
