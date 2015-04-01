@@ -10,6 +10,8 @@ and then deploy them.
 * `username`: *Required.* The username for the BOSH director.
 * `password`: *Required.* The password for the BOSH director.
 * `deployment`: *Required.* The name of the deployment.
+* `ignore_ssl`: *Optional*. Whether or not SSL should be ignored when connecting
+  to the BOSH director. Defaults to false.
 
 ## Behaviour
 

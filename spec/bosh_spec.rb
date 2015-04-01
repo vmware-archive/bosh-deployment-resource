@@ -178,7 +178,7 @@ describe BoshDeploymentResource::Bosh do
   let(:username) { "bosh-userΩΩΩΩ" }
   let(:password) { "bosh-password!#%&#(*" }
 
-  let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password) }
+  let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password, false) }
 
   before(:all) do
     WebMock.disable_net_connect!

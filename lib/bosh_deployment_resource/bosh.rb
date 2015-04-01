@@ -5,10 +5,11 @@ require "faraday"
 
 module BoshDeploymentResource
   class Bosh
-    def initialize(target, username, password)
+    def initialize(target, username, password, ignore_ssl)
       @target = target
       @username = username
       @password = password
+      @ignore_ssl = ignore_ssl
     end
 
     def upload_stemcell(path)
@@ -36,11 +37,11 @@ module BoshDeploymentResource
 
     private
 
-    attr_reader :target, :username, :password
+    attr_reader :target, :username, :password, :ignore_ssl
 
     def http_client
       @http_client ||= begin
-        conn = Faraday.new(url: target, ssl: { verify: false })
+        conn = Faraday.new(url: target, ssl: { verify: !ignore_ssl })
         conn.basic_auth username, password
         conn
       end
