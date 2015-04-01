@@ -1,5 +1,5 @@
 require "json"
-require "open3"
+require "pty"
 
 require "faraday"
 
@@ -56,10 +56,19 @@ module BoshDeploymentResource
     end
 
     def run(command, env={})
-      pid = Process.spawn(env, command, out: :err, err: :err)
+      master, slave = PTY.open
+
+      pid = Process.spawn(env, command, out: slave, err: slave)
+
+      master.each do |line|
+        STDERR.puts line
+      end
+
       Process.wait(pid)
 
       raise "command '#{command} failed!" unless $?.success?
+    ensure
+      master.close
     end
   end
 end
