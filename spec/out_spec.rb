@@ -4,16 +4,24 @@ require "fileutils"
 require "json"
 require "open3"
 require "tmpdir"
+require "stringio"
 
 describe "Out Command" do
   let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, use_stemcell: nil, use_release: nil) }
-  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil) }
-  let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest) }
+  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, last_deployment_time: Time.at(1234567890)) }
+  let(:response) { StringIO.new }
+  let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest, response) }
 
   def touch(*paths)
     path = File.join(paths)
     FileUtils.mkdir_p(File.dirname(path))
     FileUtils.touch(path)
+  end
+
+  def cp(src, *paths)
+    path = File.join(paths)
+    FileUtils.mkdir_p(File.dirname(path))
+    FileUtils.cp(src, path)
   end
 
   def in_dir
@@ -23,12 +31,12 @@ describe "Out Command" do
   end
 
   def add_default_artefacts(working_dir)
-    touch working_dir, "stemcells", "stemcell.tgz"
-    touch working_dir, "stemcells", "other-stemcell.tgz"
+    cp "spec/fixtures/stemcell.tgz", working_dir, "stemcells", "stemcell.tgz"
+    cp "spec/fixtures/stemcell.tgz", working_dir, "stemcells", "other-stemcell.tgz"
     touch working_dir, "stemcells", "not-stemcell.txt"
 
-    touch working_dir, "releases", "release.tgz"
-    touch working_dir, "releases", "other-release.tgz"
+    cp "spec/fixtures/release.tgz", working_dir, "releases", "release.tgz"
+    cp "spec/fixtures/release.tgz", working_dir, "releases", "other-release.tgz"
     touch working_dir, "releases", "not-release.txt"
   end
 

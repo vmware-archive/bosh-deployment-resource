@@ -1,21 +1,29 @@
+require 'time'
+
 module BoshDeploymentResource
   class OutCommand
-    def initialize(bosh, manifest)
+    def initialize(bosh, manifest, writer=STDOUT)
       @bosh = bosh
       @manifest = manifest
+      @writer = writer
     end
 
     def run(working_dir, request)
       validate! request
 
-      stemcells(working_dir, request).each do |stemcell_path|
+      stemcells = []
+      releases = []
+
+      find_stemcells(working_dir, request).each do |stemcell_path|
         stemcell = BoshStemcell.new(stemcell_path)
         manifest.use_stemcell(stemcell)
 
         bosh.upload_stemcell(stemcell_path)
+
+        stemcells << stemcell
       end
 
-      releases(working_dir, request).each do |release_path|
+      find_releases(working_dir, request).each do |release_path|
         release = BoshRelease.new(release_path)
         manifest.use_release(release)
 
@@ -24,11 +32,23 @@ module BoshDeploymentResource
 
       new_manifest_path = manifest.write!
       bosh.deploy(new_manifest_path)
+
+      time = bosh.last_deployment_time("TODO: DEPLOYMENT NAME")
+      response = {
+        "version" => {
+          "timestamp" => time.utc.iso8601
+        },
+        "metadata" =>
+          stemcells.map { |s| { "name" => "stemcell #{s.name}", "version" => s.version } } +
+          releases.map { |r| { "name" => "release #{r.name}", "version" => r.version } }
+      }
+
+      writer.puts response.to_json
     end
 
     private
 
-    attr_reader :bosh, :manifest
+    attr_reader :bosh, :manifest, :writer
 
     def validate!(request)
       ["target", "username", "password"].each do |field|
@@ -47,7 +67,7 @@ module BoshDeploymentResource
       request.fetch("params").fetch("rebase", false)
     end
 
-    def stemcells(working_dir, request)
+    def find_stemcells(working_dir, request)
       globs = request.
         fetch("params").
         fetch("stemcells")
@@ -55,7 +75,7 @@ module BoshDeploymentResource
       glob(working_dir, globs)
     end
 
-    def releases(working_dir, request)
+    def find_releases(working_dir, request)
       globs = request.
         fetch("params").
         fetch("releases")

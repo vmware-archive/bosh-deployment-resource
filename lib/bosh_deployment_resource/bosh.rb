@@ -1,4 +1,7 @@
+require "json"
 require "open3"
+
+require "faraday"
 
 module BoshDeploymentResource
   class Bosh
@@ -23,16 +26,31 @@ module BoshDeploymentResource
       bosh("-d #{manifest_path} deploy")
     end
 
+    def last_deployment_time(deployment_name)
+      response = http_client.get "/tasks", { "state" => "done" }
+      tasks = JSON.parse(response.body)
+
+      latest_task = tasks.
+        select { |t| t.fetch("result") == "/deployments/#{deployment_name}" }.
+        first
+
+      Time.at(latest_task.fetch("timestamp")) if latest_task
+    end
+
     private
 
     attr_reader :target, :username, :password
+
+    def http_client
+      @http_client ||= Faraday.new(:url => target)
+    end
 
     def bosh(command)
       run("bosh -n -t #{target} -u #{username} -p #{password} #{command}")
     end
 
     def run(command)
-      pid = Process.spawn(command, out: :out, err: :err)
+      pid = Process.spawn(command, out: :err, err: :err)
       Process.wait(pid)
 
       raise "command '#{command} failed!" unless $?.success?
