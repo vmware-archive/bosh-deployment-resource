@@ -62,8 +62,13 @@ module BoshDeploymentResource
 
       slave.close
 
-      master.each do |line|
-        STDERR.puts line
+      begin
+        master.each do |line|
+          STDERR.puts line
+        end
+      rescue Errno::EIO
+        # ruby on linux raises this instead of just breaking the loop.
+        # it's pretty cool.
       end
 
       Process.wait(pid)
