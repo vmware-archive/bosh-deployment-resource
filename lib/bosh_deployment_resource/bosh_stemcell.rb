@@ -1,5 +1,8 @@
 require "open3"
 require "yaml"
+require "zlib"
+
+require "archive/tar/minitar"
 
 module BoshDeploymentResource
   class BoshStemcell
@@ -22,8 +25,16 @@ module BoshDeploymentResource
     end
 
     def manifest_file_contents
-      stdout, _ = Open3.capture2("tar -O --extract --file #{path} stemcell.MF")
-      stdout
+      tgz = Zlib::GzipReader.new(File.open(path, 'rb'))
+      reader = Archive::Tar::Minitar::Reader.open(tgz)
+
+      reader.each_entry do |entry|
+        next unless File.basename(entry.full_name) == "stemcell.MF"
+
+        return entry.read
+      end
+
+      raise "could not find stemcell.MF"
     end
 
     attr_reader :path
