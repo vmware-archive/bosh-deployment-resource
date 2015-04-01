@@ -60,6 +60,8 @@ module BoshDeploymentResource
 
       pid = Process.spawn(env, command, out: slave, err: slave)
 
+      slave.close
+
       master.each do |line|
         STDERR.puts line
       end
@@ -68,7 +70,7 @@ module BoshDeploymentResource
 
       raise "command '#{command} failed!" unless $?.success?
     ensure
-      master.close
+      master.close if master
     end
   end
 end
