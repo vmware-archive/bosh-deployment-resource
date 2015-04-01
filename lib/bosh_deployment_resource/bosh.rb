@@ -39,7 +39,11 @@ module BoshDeploymentResource
     attr_reader :target, :username, :password
 
     def http_client
-      @http_client ||= Faraday.new(:url => target)
+      @http_client ||= begin
+        conn = Faraday.new(url: target, ssl: { verify: false })
+        conn.basic_auth username, password
+        conn
+      end
     end
 
     def bosh(command)

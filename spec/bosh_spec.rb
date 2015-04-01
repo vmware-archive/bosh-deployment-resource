@@ -175,17 +175,23 @@ EOS
 
 describe BoshDeploymentResource::Bosh do
   let(:target) { "http://bosh.example.com" }
-  let(:username) { "bosh-user" }
-  let(:password) { "bosh-password" }
+  let(:username) { "bosh-userΩΩΩΩ" }
+  let(:password) { "bosh-password!#%&#(*" }
 
   let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password) }
 
+  before(:all) do
+    WebMock.disable_net_connect!
+  end
+
+  after(:all) do
+    WebMock.allow_net_connect!
+  end
+
   describe "fetching the latest timestamp of a bosh deployment" do
-
-
     context "when deployments are found" do
       before do
-        stub_request(:get, "http://bosh.example.com/tasks?state=done").
+        stub_request(:get, "http://bosh-user%CE%A9%CE%A9%CE%A9%CE%A9:bosh-password%21%23%25%26%23%28%2A@bosh.example.com/tasks?state=done").
           to_return(:body => response)
       end
 
@@ -198,7 +204,7 @@ describe BoshDeploymentResource::Bosh do
 
     context "when no deployments are found" do
       before do
-        stub_request(:get, "http://bosh.example.com/tasks?state=done").
+        stub_request(:get, "http://bosh-user%CE%A9%CE%A9%CE%A9%CE%A9:bosh-password%21%23%25%26%23%28%2A@bosh.example.com/tasks?state=done").
           to_return(:body => "[]")
       end
 
