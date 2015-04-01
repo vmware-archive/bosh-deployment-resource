@@ -26,15 +26,18 @@ module BoshDeploymentResource
 
     def manifest_file_contents
       tgz = Zlib::GzipReader.new(File.open(path, 'rb'))
-      reader = Archive::Tar::Minitar::Reader.open(tgz)
 
-      reader.each_entry do |entry|
-        next unless File.basename(entry.full_name) == "stemcell.MF"
+      Archive::Tar::Minitar::Reader.open(tgz) do |reader|
+        reader.each_entry do |entry|
+          next unless File.basename(entry.full_name) == "stemcell.MF"
 
-        return entry.read
+          return entry.read
+        end
       end
 
       raise "could not find stemcell.MF"
+    ensure
+      tgz.close if tgz
     end
 
     attr_reader :path
