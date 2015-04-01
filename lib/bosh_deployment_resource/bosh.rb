@@ -49,8 +49,7 @@ module BoshDeploymentResource
 
     def bosh(command)
       run(
-        "bosh -n #{command}",
-        "BOSH_TARGET" => target,
+        "bosh -t #{target} -n #{command}",
         "BOSH_USER" => username,
         "BOSH_PASSWORD" => password,
       )
