@@ -5,11 +5,12 @@ require "faraday"
 
 module BoshDeploymentResource
   class Bosh
-    def initialize(target, username, password, ignore_ssl)
+    def initialize(target, username, password, ignore_ssl, command_runner=CommandRunner.new)
       @target = target
       @username = username
       @password = password
       @ignore_ssl = ignore_ssl
+      @command_runner = command_runner
     end
 
     def upload_stemcell(path)
@@ -37,7 +38,7 @@ module BoshDeploymentResource
 
     private
 
-    attr_reader :target, :username, :password, :ignore_ssl
+    attr_reader :target, :username, :password, :ignore_ssl, :command_runner
 
     def http_client
       @http_client ||= begin
@@ -49,33 +50,22 @@ module BoshDeploymentResource
 
     def bosh(command)
       run(
-        "bosh -t #{target} -n #{command}",
+        "bosh -n --color -t #{target} #{command}",
         "BOSH_USER" => username,
         "BOSH_PASSWORD" => password,
       )
     end
 
     def run(command, env={})
-      master, slave = PTY.open
+      command_runner.run(command, env)
+    end
+  end
 
-      pid = Process.spawn(env, command, out: slave, err: slave)
-
-      slave.close
-
-      begin
-        master.each do |line|
-          STDERR.puts line
-        end
-      rescue Errno::EIO
-        # ruby on linux raises this instead of just breaking the loop.
-        # it's pretty cool.
-      end
-
+  class CommandRunner
+    def run(command, env={})
+      pid = Process.spawn(env, command, out: :err, err: :err)
       Process.wait(pid)
-
-      raise "command '#{command} failed!" unless $?.success?
-    ensure
-      master.close if master
+      raise "command '#{command}' failed!" unless $?.success?
     end
   end
 end
