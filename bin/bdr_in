@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require "json"
+
+output = {
+  "version" => {
+    "timestamp" => Time.now.utc.iso8601
+  },
+}
+
+puts output.to_json
