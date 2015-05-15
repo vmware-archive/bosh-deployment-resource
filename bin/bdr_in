@@ -2,10 +2,16 @@
 
 require "json"
 
-output = {
-  "version" => {
-    "timestamp" => Time.now.utc.iso8601
-  },
-}
+require 'bosh_deployment_resource'
 
-puts output.to_json
+working_dir = ARGV[0]
+request = JSON.parse(STDIN.read)
+
+command = BoshDeploymentResource::InCommand.new
+
+begin
+  command.run(working_dir, request)
+rescue => e
+  STDERR.puts e.message
+  exit 1
+end
