@@ -6,7 +6,8 @@ and then deploy them.
 ## Source Configuration
 
 * `target`: *Required.* The address of the BOSH director which will be used for
-  deployment.
+  deployment. This must include the full URI (including scheme and port), e.g.
+  `https://bosh.zombocom.biz:25555`.
 * `username`: *Required.* The username for the BOSH director.
 * `password`: *Required.* The password for the BOSH director.
 * `deployment`: *Required.* The name of the deployment.
