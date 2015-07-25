@@ -15,6 +15,8 @@ module BoshDeploymentResource
       stemcells = []
       releases = []
 
+      manifest.fallback_director_uuid(bosh.director_uuid)
+
       find_stemcells(working_dir, request).each do |stemcell_path|
         stemcell = BoshStemcell.new(stemcell_path)
         manifest.use_stemcell(stemcell)

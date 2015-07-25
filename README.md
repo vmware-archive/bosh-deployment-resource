@@ -18,6 +18,9 @@ and then deploy them.
 This will upload any given stemcells and releases, lock them down in the
 deployment manifest and then deploy.
 
+If the manifest does not specify a `director_uuid`, it will be filled in with
+the UUID returned by the targeted director.
+
 #### Parameters
 
 * `manifest`: *Required.* Path to a BOSH deployment manifest file.

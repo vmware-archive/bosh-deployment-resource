@@ -8,8 +8,8 @@ require "tmpdir"
 require "stringio"
 
 describe "Out Command" do
-  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, use_stemcell: nil, use_release: nil, name: "bosh-deployment") }
-  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil) }
+  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, fallback_director_uuid: nil, use_stemcell: nil, use_release: nil, name: "bosh-deployment") }
+  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, director_uuid: "some-director-uuid") }
   let(:response) { StringIO.new }
   let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest, response) }
 
@@ -156,12 +156,14 @@ describe "Out Command" do
       end
     end
 
-    it "generates a new manifest (with locked down versions) and deploys it" do
+    it "generates a new manifest (with locked down versions and a defaulted director uuid) and deploys it" do
       in_dir do |working_dir|
         add_default_artefacts working_dir
 
+        expect(bosh).to receive(:director_uuid).and_return("abcdef")
         expect(manifest).to receive(:use_release)
         expect(manifest).to receive(:use_stemcell)
+        expect(manifest).to receive(:fallback_director_uuid).with("abcdef")
 
         expect(bosh).to receive(:deploy).with(written_manifest.path)
 

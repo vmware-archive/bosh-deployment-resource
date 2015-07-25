@@ -23,6 +23,10 @@ module BoshDeploymentResource
         each { |r| r.fetch("stemcell").store("version", stemcell.version) }
     end
 
+    def fallback_director_uuid(new_uuid)
+      manifest["director_uuid"] ||= new_uuid
+    end
+
     def write!
       file = Tempfile.new("bosh_manifest")
 

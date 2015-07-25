@@ -10,6 +10,12 @@ describe BoshDeploymentResource::CommandRunner do
       }.to_not raise_error
     end
 
+    it 'takes an options hash' do
+      r, w = IO.pipe
+      command_runner.run('sh -c "echo $FOO"', {"FOO" => "sup"}, out: w)
+      expect(r.gets).to eq("sup\n")
+    end
+
     it 'raises an exception if the command fails' do
       expect {
         command_runner.run('sh -c "$PROG"', "PROG" => "false")
@@ -35,35 +41,37 @@ describe BoshDeploymentResource::Bosh do
 
   let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password, command_runner) }
 
-  before(:all) do
-    WebMock.disable_net_connect!
-  end
-
-  after(:all) do
-    WebMock.allow_net_connect!
-  end
-
-  describe ".uploading a stemcell" do
+  describe ".upload_stemcell" do
     it "runs the command to upload a stemcell" do
-      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} upload stemcell /path/to/a/stemcell.tgz --skip-if-exists}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password })
+      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} upload stemcell /path/to/a/stemcell.tgz --skip-if-exists}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, {})
 
       bosh.upload_stemcell("/path/to/a/stemcell.tgz")
     end
   end
 
   describe ".upload_release" do
-    it "runs the command to upload a " do
-      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} upload release /path/to/a/release.tgz --skip-if-exists}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password })
+    it "runs the command to upload a release" do
+      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} upload release /path/to/a/release.tgz --skip-if-exists}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, {})
 
       bosh.upload_release("/path/to/a/release.tgz")
     end
   end
 
   describe ".deploy" do
-    it "runs the command to upload a " do
-      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} -d /path/to/a/manifest.yml deploy}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password })
+    it "runs the command to deploy" do
+      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} -d /path/to/a/manifest.yml deploy}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, {})
 
       bosh.deploy("/path/to/a/manifest.yml")
+    end
+  end
+
+  describe ".director_uuid" do
+    it "collects the output of status --uuid" do
+      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} status --uuid}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, anything) do |_, _, opts|
+        opts[:out].puts "abcdef\n"
+      end
+
+      expect(bosh.director_uuid).to eq("abcdef")
     end
   end
 end
