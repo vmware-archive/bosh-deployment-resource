@@ -1,8 +1,6 @@
 require "json"
 require "pty"
 
-require "faraday"
-
 module BoshDeploymentResource
   class Bosh
     def initialize(target, username, password, command_runner=CommandRunner.new)
