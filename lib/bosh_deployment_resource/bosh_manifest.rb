@@ -28,7 +28,7 @@ module BoshDeploymentResource
 
       File.write(file.path, YAML.dump(manifest))
 
-      file.path
+      file
     end
 
     private

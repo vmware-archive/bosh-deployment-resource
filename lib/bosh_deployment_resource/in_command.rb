@@ -8,17 +8,11 @@ module BoshDeploymentResource
     end
 
     def run(working_dir, request)
-      time = request
-        .fetch("version", {})
-        .fetch("timestamp", Time.now.utc.iso8601)
+      raise "no version specified" unless request["version"]
 
-      response = {
-        "version" => {
-          "timestamp" => time
-        }
-      }
-
-      writer.puts(response.to_json)
+      writer.puts({
+        "version" => request.fetch("version")
+      }.to_json)
     end
 
     private

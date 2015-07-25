@@ -1,5 +1,6 @@
 require "spec_helper"
 
+require "digest"
 require "fileutils"
 require "json"
 require "open3"
@@ -8,9 +9,16 @@ require "stringio"
 
 describe "Out Command" do
   let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, use_stemcell: nil, use_release: nil, name: "bosh-deployment") }
-  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, last_deployment_time: Time.at(1234567890)) }
+  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil) }
   let(:response) { StringIO.new }
   let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest, response) }
+
+  let(:written_manifest) do
+    file = Tempfile.new("bosh_manifest")
+    file.write("hello world")
+    file.close
+    file
+  end
 
   def touch(*paths)
     path = File.join(paths)
@@ -41,7 +49,7 @@ describe "Out Command" do
   end
 
   before do
-    allow(manifest).to receive(:write!).and_return("/tmp/awesome/manifest.yml")
+    allow(manifest).to receive(:write!).and_return(written_manifest)
   end
 
   let(:request) {
@@ -75,6 +83,33 @@ describe "Out Command" do
           with(File.join(working_dir, "stemcells", "other-stemcell.tgz"))
 
         command.run(working_dir, request)
+      end
+    end
+
+    it "emits a sha1 checksum of the manifest as the version" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        command.run(working_dir, request)
+
+        expect(JSON.parse(response.string)["version"]).to eq({
+          "manifest_sha1" => Digest::SHA1.file(written_manifest.path).hexdigest
+        })
+      end
+    end
+
+    it "emits the release/stemcell versions in the metadata" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        command.run(working_dir, request)
+
+        expect(JSON.parse(response.string)["metadata"]).to eq([
+          {"name" => "stemcell", "value" => "bosh-aws-xen-hvm-ubuntu-trusty-go_agent v2905"},
+          {"name" => "stemcell", "value" => "bosh-aws-xen-hvm-ubuntu-trusty-go_agent v2905"},
+          {"name" => "release", "value" => "concourse v0.43.0"},
+          {"name" => "release", "value" => "concourse v0.43.0"}
+        ])
       end
     end
 
@@ -128,7 +163,7 @@ describe "Out Command" do
         expect(manifest).to receive(:use_release)
         expect(manifest).to receive(:use_stemcell)
 
-        expect(bosh).to receive(:deploy).with("/tmp/awesome/manifest.yml")
+        expect(bosh).to receive(:deploy).with(written_manifest.path)
 
         command.run(working_dir, request)
       end

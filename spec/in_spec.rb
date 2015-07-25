@@ -24,7 +24,7 @@ describe "In Command" do
           "deployment" => "bosh-deployment",
         },
         "version" => {
-          "timestamp" => "2015-05-15T16:39:05Z"
+          "manifest_sha1" => "abcdef"
         }
       }
     }
@@ -34,7 +34,7 @@ describe "In Command" do
 
       expected = {
         "version" => {
-          "timestamp" => "2015-05-15T16:39:05Z"
+          "manifest_sha1" => "abcdef"
         }
       }
 
@@ -55,17 +55,8 @@ describe "In Command" do
       }
     }
 
-    it "outputs a 'fake' current version" do
-      run_command
-
-      expected = {
-        "version" => {
-          "timestamp" => Time.now.utc.iso8601
-        }
-      }
-
-      output = JSON.parse(response.read)
-      expect(output).to eq(expected) # too precise? seems to be fine.
+    it "fails" do
+      expect { run_command }.to raise_error("no version specified")
     end
   end
 end

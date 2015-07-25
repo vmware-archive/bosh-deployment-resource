@@ -1,3 +1,4 @@
+require 'digest'
 require 'time'
 
 module BoshDeploymentResource
@@ -32,13 +33,14 @@ module BoshDeploymentResource
         releases << release
       end
 
-      new_manifest_path = manifest.write!
-      bosh.deploy(new_manifest_path)
+      new_manifest = manifest.write!
+      manifest_sha1 = Digest::SHA1.file(new_manifest.path).hexdigest
 
-      time = bosh.last_deployment_time(manifest.name)
+      bosh.deploy(new_manifest.path)
+
       response = {
         "version" => {
-          "timestamp" => time.utc.iso8601
+          "manifest_sha1" => manifest_sha1
         },
         "metadata" =>
           stemcells.map { |s| { "name" => "stemcell", "value" => "#{s.name} v#{s.version}" } } +

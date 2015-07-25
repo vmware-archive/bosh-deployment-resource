@@ -14,7 +14,6 @@ bosh = BoshDeploymentResource::Bosh.new(
   source.fetch("target"),
   source.fetch("username"),
   source.fetch("password"),
-  source.fetch("ignore_ssl", false),
 )
 manifest = BoshDeploymentResource::BoshManifest.new(
   File.expand_path(params.fetch("manifest"), working_dir)
