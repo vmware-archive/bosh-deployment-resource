@@ -5,8 +5,9 @@ and then deploy them.
 
 ## Source Configuration
 
-* `target`: *Required.* The address of the BOSH director which will be used for
-  deployment.
+* `target`: *Optional.* The address of the BOSH director which will be used for
+  the deployment. If omitted, `target_file` must be specified via `out`
+  parameters, as documented below.
 * `username`: *Required.* The username for the BOSH director.
 * `password`: *Required.* The password for the BOSH director.
 * `deployment`: *Required.* The name of the deployment.
@@ -24,7 +25,17 @@ the UUID returned by the targeted director.
 #### Parameters
 
 * `manifest`: *Required.* Path to a BOSH deployment manifest file.
-* `stemcells`: *Required.*  An array of globs that should point to where the
+
+* `stemcells`: *Required.* An array of globs that should point to where the
   stemcells used in the deployment can be found.
+
 * `releases`: *Required.* An array of globs that should point to where the
   releases used in the deployment can be found.
+
+* `target_file`: *Optional.* Path to a file containing a BOSH director address.
+  This allows the target to be determined at runtime, e.g. by acquiring a BOSH
+  lite instance using the [Pool
+  resource](https://github.com/concourse/pool-resource).
+
+  If both `target_file` and `target` are specified, `target_file` takes
+  precedence.

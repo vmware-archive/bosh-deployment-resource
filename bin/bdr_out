@@ -10,8 +10,17 @@ request = JSON.parse(STDIN.read)
 source = request.fetch("source")
 params = request.fetch("params")
 
+target_file = params["target_file"]
+
+target =
+  if target_file
+    File.read(File.expand_path(target_file, working_dir)).strip
+  else
+    source.fetch("target")
+  end
+
 bosh = BoshDeploymentResource::Bosh.new(
-  source.fetch("target"),
+  target,
   source.fetch("username"),
   source.fetch("password"),
 )
