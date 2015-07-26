@@ -173,25 +173,6 @@ describe "Out Command" do
   end
 
   context "with invalid inputs" do
-    it "requires a target" do
-      in_dir do |working_dir|
-        expect do
-          command.run(working_dir, {
-            "source" => {
-              "username" => "bosh-user",
-              "password" => "bosh-password",
-              "deployment" => "bosh-deployment",
-            },
-            "params" => {
-              "manifest" => "deployment.yml",
-              "stemcells" => [],
-              "releases" => []
-            }
-          })
-        end.to raise_error /source must include 'target'/
-      end
-    end
-
     it "errors if the given deployment name and the name in the manifest do not match" do
       allow(manifest).to receive(:name).and_return("other-name")
 

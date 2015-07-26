@@ -57,7 +57,7 @@ module BoshDeploymentResource
     attr_reader :bosh, :manifest, :writer
 
     def validate!(request)
-      ["target", "username", "password", "deployment"].each do |field|
+      ["username", "password", "deployment"].each do |field|
         request.fetch("source").fetch(field) { raise "source must include '#{field}'" }
       end
 
