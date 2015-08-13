@@ -1,0 +1,19 @@
+---
+packages:
+- name: fake_package
+  version: 1234567890abcdef1234567890abcdef12345678
+  fingerprint: 1234567890abcdef1234567890abcdef12345678
+  sha1: 1234567890abcdef1234567890abcdef12345678
+  dependencies: []
+jobs:
+- name: fake_job
+  version: 1234567890abcdef1234567890abcdef12345678
+  fingerprint: 1234567890abcdef1234567890abcdef12345678
+  sha1: 1234567890abcdef1234567890abcdef12345678
+license:
+  version: 1234567890abcdef1234567890abcdef12345678
+  fingerprint: 1234567890abcdef1234567890abcdef12345678
+  sha1: 1234567890abcdef1234567890abcdef12345678
+commit_hash: 12345678
+name: concourse
+version: 0.43.0
