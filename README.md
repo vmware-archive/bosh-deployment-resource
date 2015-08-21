@@ -12,6 +12,30 @@ and then deploy them.
 * `password`: *Required.* The password for the BOSH director.
 * `deployment`: *Required.* The name of the deployment.
 
+### Example
+
+``` yaml
+- name: staging
+  type: bosh-deployment
+  source:
+    target: https://bosh.example.com:25555
+    username: admin
+    password: admin
+    deployment: staging-deployment-name
+```
+
+``` yaml
+- put: staging
+  params:
+    manifest: path/to/manifest.yml
+    stemcells:
+    - path/to/stemcells-*.tgz
+    - other/path/to/stemcells-*.tgz
+    releases:
+    - path/to/releases-*.tgz
+    - other/path/to/releases-*.tgz
+```
+
 ## Behaviour
 
 ### `out`: Deploy a BOSH deployment
