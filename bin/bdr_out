@@ -23,6 +23,7 @@ bosh = BoshDeploymentResource::Bosh.new(
   target,
   source.fetch("username"),
   source.fetch("password"),
+  {rebase_release: params["rebase_release"]}
 )
 manifest = BoshDeploymentResource::BoshManifest.new(
   File.expand_path(params.fetch("manifest"), working_dir)

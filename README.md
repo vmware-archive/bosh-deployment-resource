@@ -63,3 +63,5 @@ the UUID returned by the targeted director.
 
   If both `target_file` and `target` are specified, `target_file` takes
   precedence.
+
+* `rebase_release`: if set to `true` it performs release upload with `--rebase` flag.
