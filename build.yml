@@ -8,4 +8,4 @@ inputs:
   path: .
 
 run:
-  path: ci/test.sh
+  path: scripts/ci
