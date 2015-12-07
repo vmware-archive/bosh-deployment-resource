@@ -34,12 +34,13 @@ describe BoshDeploymentResource::CommandRunner do
 end
 
 describe BoshDeploymentResource::Bosh do
+  let(:opts){ {} }
   let(:target) { "http://bosh.example.com" }
   let(:username) { "bosh-userΩΩΩΩ" }
   let(:password) { "bosh-password!#%&#(*" }
   let(:command_runner) { instance_double(BoshDeploymentResource::CommandRunner) }
 
-  let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password, command_runner) }
+  let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password, opts, command_runner) }
 
   describe ".upload_stemcell" do
     it "runs the command to upload a stemcell" do
@@ -54,6 +55,16 @@ describe BoshDeploymentResource::Bosh do
       expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} upload release /path/to/a/release.tgz --skip-if-exists}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, {})
 
       bosh.upload_release("/path/to/a/release.tgz")
+    end
+
+    describe 'when performing rebase upload' do
+      let(:opts){ {rebase_release: true} }
+
+      it "runs the command to upload a release with rebase" do
+        expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} upload release /path/to/a/release.tgz --rebase}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, {})
+
+        bosh.upload_release("/path/to/a/release.tgz")
+      end
     end
   end
 

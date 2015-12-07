@@ -3,11 +3,12 @@ require "pty"
 
 module BoshDeploymentResource
   class Bosh
-    def initialize(target, username, password, command_runner=CommandRunner.new)
+    def initialize(target, username, password, opts, command_runner=CommandRunner.new)
       @target = target
       @username = username
       @password = password
       @command_runner = command_runner
+      @opts = opts
     end
 
     def upload_stemcell(path)
@@ -15,7 +16,7 @@ module BoshDeploymentResource
     end
 
     def upload_release(path)
-      bosh("upload release #{path} --skip-if-exists")
+      bosh("upload release #{path} #{upload_release_opts}")
     end
 
     def deploy(manifest_path)
@@ -33,7 +34,7 @@ module BoshDeploymentResource
 
     private
 
-    attr_reader :target, :username, :password, :command_runner
+    attr_reader :target, :username, :password, :opts, :command_runner
 
     def bosh(command, opts={})
       run(
@@ -45,6 +46,10 @@ module BoshDeploymentResource
 
     def run(command, env={}, opts={})
       command_runner.run(command, env, opts)
+    end
+
+    def upload_release_opts
+      opts[:rebase_release] ? '--rebase' : '--skip-if-exists'
     end
   end
 
