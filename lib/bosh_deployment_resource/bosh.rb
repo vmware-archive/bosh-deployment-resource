@@ -21,6 +21,10 @@ module BoshDeploymentResource
     def deploy(manifest_path)
       bosh("-d #{manifest_path} deploy")
     end
+    
+    def cleanup
+      bosh("cleanup")
+    end
 
     def director_uuid
       r, w = IO.pipe

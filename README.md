@@ -56,6 +56,9 @@ the UUID returned by the targeted director.
 * `releases`: *Required.* An array of globs that should point to where the
   releases used in the deployment can be found.
 
+* `cleanup`: *Optional* An boolean that specifies if a bosh cleanup should be
+  run before deployment. Defaults to false.
+
 * `target_file`: *Optional.* Path to a file containing a BOSH director address.
   This allows the target to be determined at runtime, e.g. by acquiring a BOSH
   lite instance using the [Pool

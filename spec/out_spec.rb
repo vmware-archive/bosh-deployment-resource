@@ -170,6 +170,28 @@ describe "Out Command" do
         command.run(working_dir, request)
       end
     end
+      
+    it "does NOT run a bosh cleanup when the cleanup parameter is NOT passed" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(bosh).not_to receive(:cleanup)
+
+        command.run(working_dir, request)
+      end
+    end
+    
+    it "runs a bosh cleanup when the cleanup parameter is set to true" do
+      request.fetch("params").store("cleanup", true)
+    
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(bosh).to receive(:cleanup)
+
+        command.run(working_dir, request)
+      end
+    end
   end
 
   context "with invalid inputs" do
@@ -268,6 +290,27 @@ describe "Out Command" do
             }
           })
         end.to raise_error /params must include 'manifest'/
+      end
+    end
+    
+    it "errors if the cleanup paramater is NOT a boolean value" do
+      in_dir do |working_dir|
+        expect do
+          command.run(working_dir, {
+            "source" => {
+              "target" => "http://bosh.example.com",
+              "username" => "bosh-username",
+              "password" => "bosh-password",
+              "deployment" => "bosh-deployment",
+            },
+            "params" => {
+              "manifest" => "deployment.yml",
+              "stemcells" => [],
+              "releases" => [],
+              "cleanup" => 1
+            }
+          })
+        end.to raise_error /given cleanup value must be a boolean/
       end
     end
 
