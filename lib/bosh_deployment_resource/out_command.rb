@@ -12,6 +12,8 @@ module BoshDeploymentResource
     def run(working_dir, request)
       validate! request
 
+      bosh.cleanup if request.fetch("params")["cleanup"].equal? true
+      
       stemcells = []
       releases = []
 
@@ -66,6 +68,12 @@ module BoshDeploymentResource
         raise "given deployment name '#{deployment_name}' does not match manifest name '#{manifest.name}'"
       end
 
+      case request.fetch("params")["cleanup"]
+      when nil, true, false
+      else
+        raise "given cleanup value must be a boolean"
+      end
+      
       ["manifest", "stemcells", "releases"].each do |field|
         request.fetch("params").fetch(field) { raise "params must include '#{field}'" }
       end
