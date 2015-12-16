@@ -3,11 +3,19 @@ require "pty"
 
 module BoshDeploymentResource
   class Bosh
-    def initialize(target, username, password, command_runner=CommandRunner.new)
+    def initialize(target, username, password, cert, command_runner=CommandRunner.new)
       @target = target
       @username = username
       @password = password
+      @cert = cert
       @command_runner = command_runner
+
+      if @cert && File.exist?(@cert)
+        run(
+          "bosh target #{@target} --ca-cert #{@cert}",
+          { 'BOSH_USER' => @username, 'BOSH_PASSWORD' => @password }
+        )
+      end
     end
 
     def upload_stemcell(path)
@@ -21,7 +29,7 @@ module BoshDeploymentResource
     def deploy(manifest_path)
       bosh("-d #{manifest_path} deploy")
     end
-    
+
     def cleanup
       bosh("cleanup")
     end
