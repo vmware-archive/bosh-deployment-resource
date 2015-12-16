@@ -3,7 +3,7 @@ require "pty"
 
 module BoshDeploymentResource
   class Bosh
-    def initialize(target, username, password, cert, command_runner=CommandRunner.new)
+    def initialize(target, username, password, cert=nil, command_runner=CommandRunner.new)
       @target = target
       @username = username
       @password = password
