@@ -37,9 +37,10 @@ describe BoshDeploymentResource::Bosh do
   let(:target) { "http://bosh.example.com" }
   let(:username) { "bosh-userΩΩΩΩ" }
   let(:password) { "bosh-password!#%&#(*" }
+  let(:cert) { "cert/boshCA.pem" }
   let(:command_runner) { instance_double(BoshDeploymentResource::CommandRunner) }
 
-  let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password, command_runner) }
+  let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password, cert, command_runner) }
 
   describe ".upload_stemcell" do
     it "runs the command to upload a stemcell" do
