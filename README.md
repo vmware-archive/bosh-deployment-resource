@@ -3,6 +3,9 @@
 An output only resource (at the moment) that will upload stemcells and releases
 and then deploy them.
 
+Guaranteed to work with director versions `3156` and higher; no guarantees are
+made for older directors.
+
 ## Source Configuration
 
 * `target`: *Optional.* The address of the BOSH director which will be used for
