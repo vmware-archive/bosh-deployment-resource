@@ -58,10 +58,10 @@ describe "Out Command" do
         "target" => "http://bosh.example.com",
         "username" => "bosh-username",
         "password" => "bosh-password",
-        "cert" => "cert/boshCA.pem",
         "deployment" => "bosh-deployment",
       },
       "params" => {
+        "cert" => "cert/boshCA.pem",
         "manifest" => "manifest/deployment.yml",
         "stemcells" => [
           "stemcells/*.tgz"
@@ -206,10 +206,10 @@ describe "Out Command" do
               "target" => "http://bosh.example.com",
               "username" => "bosh-user",
               "password" => "bosh-password",
-              "cert" => "cert/boshCA.pem",
               "deployment" => "bosh-deployment",
             },
             "params" => {
+              "cert" => "cert/boshCA.pem",
               "manifest" => "deployment.yml",
               "stemcells" => [],
               "releases" => []
