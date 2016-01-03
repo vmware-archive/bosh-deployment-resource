@@ -10,10 +10,14 @@ module BoshDeploymentResource
       @cert = cert
       @command_runner = command_runner
 
-      if @cert && File.exist?(@cert)
+      if cert && File.exist?(cert)
+        # Assumes UAA with SSL cert...
+        run("bosh -n target #{target} --ca-cert #{cert}")
+
+        # TODO: Fix "stty: standard input: Inappropriate ioctl for device" errors
         run(
-          "bosh target #{@target} --ca-cert #{@cert}",
-          { 'BOSH_USER' => @username, 'BOSH_PASSWORD' => @password }
+          "echo -n \"$BOSH_USER\n$BOSH_PASSWORD\" | bosh login 1>/dev/null",
+          { 'BOSH_USER' => username, 'BOSH_PASSWORD' => password }
         )
       end
     end
