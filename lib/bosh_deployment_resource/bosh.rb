@@ -19,9 +19,9 @@ module BoshDeploymentResource
     end
 
     def deploy(manifest_path)
-      bosh("-d #{manifest_path} deploy")
+      bosh("-d #{manifest_path} deploy --redact-diff")
     end
-    
+
     def cleanup
       bosh("cleanup")
     end
