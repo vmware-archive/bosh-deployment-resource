@@ -3,11 +3,23 @@ require "pty"
 
 module BoshDeploymentResource
   class Bosh
-    def initialize(target, username, password, command_runner=CommandRunner.new)
+    def initialize(target, username, password, cert=nil, command_runner=CommandRunner.new)
       @target = target
       @username = username
       @password = password
+      @cert = cert
       @command_runner = command_runner
+
+      if cert && File.exist?(cert)
+        # Assumes UAA with SSL cert...
+        run("bosh -n target #{target} --ca-cert #{cert}")
+
+        # TODO: Fix "stty: standard input: Inappropriate ioctl for device" errors
+        run(
+          "echo -n \"$BOSH_USER\n$BOSH_PASSWORD\" | bosh login 1>/dev/null",
+          { 'BOSH_USER' => username, 'BOSH_PASSWORD' => password }
+        )
+      end
     end
 
     def upload_stemcell(path)
@@ -21,7 +33,7 @@ module BoshDeploymentResource
     def deploy(manifest_path)
       bosh("-d #{manifest_path} deploy")
     end
-    
+
     def cleanup
       bosh("cleanup")
     end

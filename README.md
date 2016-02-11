@@ -27,6 +27,7 @@ and then deploy them.
 ``` yaml
 - put: staging
   params:
+    cert: cert-task/BOSHRootCA.pem
     manifest: path/to/manifest.yml
     stemcells:
     - path/to/stemcells-*.tgz
@@ -47,6 +48,8 @@ If the manifest does not specify a `director_uuid`, it will be filled in with
 the UUID returned by the targeted director.
 
 #### Parameters
+
+* `cert`: *Optional* Task output path of the SSL certificate for BOSH
 
 * `manifest`: *Required.* Path to a BOSH deployment manifest file.
 

@@ -5,7 +5,7 @@ require "open3"
 
 describe "Check Command" do
   it "outputs and empty json list" do
-    stdout, _, status = Open3.capture3("bdr_check")
+    stdout, _, status = Open3.capture3("bin/bdr_check")
 
     expect(status).to be_success
     expect(JSON.parse(stdout)).to eq([])

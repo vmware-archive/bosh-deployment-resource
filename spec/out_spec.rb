@@ -61,6 +61,7 @@ describe "Out Command" do
         "deployment" => "bosh-deployment",
       },
       "params" => {
+        "cert" => "cert/boshCA.pem",
         "manifest" => "manifest/deployment.yml",
         "stemcells" => [
           "stemcells/*.tgz"
@@ -170,7 +171,7 @@ describe "Out Command" do
         command.run(working_dir, request)
       end
     end
-      
+
     it "does NOT run a bosh cleanup when the cleanup parameter is NOT passed" do
       in_dir do |working_dir|
         add_default_artefacts working_dir
@@ -180,10 +181,10 @@ describe "Out Command" do
         command.run(working_dir, request)
       end
     end
-    
+
     it "runs a bosh cleanup when the cleanup parameter is set to true" do
       request.fetch("params").store("cleanup", true)
-    
+
       in_dir do |working_dir|
         add_default_artefacts working_dir
 
@@ -208,6 +209,7 @@ describe "Out Command" do
               "deployment" => "bosh-deployment",
             },
             "params" => {
+              "cert" => "cert/boshCA.pem",
               "manifest" => "deployment.yml",
               "stemcells" => [],
               "releases" => []
@@ -292,8 +294,8 @@ describe "Out Command" do
         end.to raise_error /params must include 'manifest'/
       end
     end
-    
-    it "errors if the cleanup paramater is NOT a boolean value" do
+
+    it "errors if the cleanup parameter is NOT a boolean value" do
       in_dir do |working_dir|
         expect do
           command.run(working_dir, {

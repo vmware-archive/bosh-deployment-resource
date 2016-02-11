@@ -19,10 +19,20 @@ target =
     source.fetch("target")
   end
 
+cert_file = params["cert"]
+
+cert =
+  if cert_file
+    File.expand_path(cert_file, working_dir)
+  else
+    nil
+  end
+
 bosh = BoshDeploymentResource::Bosh.new(
   target,
   source.fetch("username"),
   source.fetch("password"),
+  cert
 )
 manifest = BoshDeploymentResource::BoshManifest.new(
   File.expand_path(params.fetch("manifest"), working_dir)
