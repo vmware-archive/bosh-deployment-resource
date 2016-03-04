@@ -35,11 +35,12 @@ end
 
 describe BoshDeploymentResource::Bosh do
   let(:target) { "http://bosh.example.com" }
+  let(:auth) { BoshDeploymentResource::Auth.parse({username: username, password: password}) }
   let(:username) { "bosh-userΩΩΩΩ" }
   let(:password) { "bosh-password!#%&#(*" }
   let(:command_runner) { instance_double(BoshDeploymentResource::CommandRunner) }
 
-  let(:bosh) { BoshDeploymentResource::Bosh.new(target, username, password, command_runner) }
+  let(:bosh) { BoshDeploymentResource::Bosh.new(target, auth, command_runner) }
 
   describe ".upload_stemcell" do
     it "runs the command to upload a stemcell" do

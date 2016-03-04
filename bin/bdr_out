@@ -19,10 +19,11 @@ target =
     source.fetch("target")
   end
 
+auth = BoshDeploymentResource::Auth.parse(source)
+
 bosh = BoshDeploymentResource::Bosh.new(
   target,
-  source.fetch("username"),
-  source.fetch("password"),
+  auth
 )
 manifest = BoshDeploymentResource::BoshManifest.new(
   File.expand_path(params.fetch("manifest"), working_dir)

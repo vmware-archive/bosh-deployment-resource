@@ -5,12 +5,18 @@ and then deploy them.
 
 ## Source Configuration
 
+* `deployment`: *Required.* The name of the deployment.
 * `target`: *Optional.* The address of the BOSH director which will be used for
   the deployment. If omitted, `target_file` must be specified via `out`
   parameters, as documented below.
+
+When using BOSH with default authentication:
 * `username`: *Required.* The username for the BOSH director.
 * `password`: *Required.* The password for the BOSH director.
-* `deployment`: *Required.* The name of the deployment.
+
+When using BOSH with [UAA authentication](https://bosh.io/docs/director-users-uaa.html#client-login):
+* `client_id`: *Required.* The UAA client ID for the BOSH director.
+* `client_secret`: *Required.* The UAA client secret for the BOSH director.
 
 ### Example
 

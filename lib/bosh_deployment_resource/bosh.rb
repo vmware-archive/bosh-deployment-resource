@@ -3,10 +3,9 @@ require "pty"
 
 module BoshDeploymentResource
   class Bosh
-    def initialize(target, username, password, command_runner=CommandRunner.new)
+    def initialize(target, auth, command_runner=CommandRunner.new)
       @target = target
-      @username = username
-      @password = password
+      @auth = auth
       @command_runner = command_runner
     end
 
@@ -21,7 +20,7 @@ module BoshDeploymentResource
     def deploy(manifest_path)
       bosh("-d #{manifest_path} deploy")
     end
-    
+
     def cleanup
       bosh("cleanup")
     end
@@ -37,12 +36,12 @@ module BoshDeploymentResource
 
     private
 
-    attr_reader :target, :username, :password, :command_runner
+    attr_reader :target, :command_runner
 
     def bosh(command, opts={})
       run(
         "bosh -n --color -t #{target} #{command}",
-        {"BOSH_USER" => username, "BOSH_PASSWORD" => password},
+        @auth.env,
         opts,
       )
     end
