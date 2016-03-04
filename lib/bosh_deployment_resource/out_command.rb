@@ -13,7 +13,7 @@ module BoshDeploymentResource
       validate! request
 
       bosh.cleanup if request.fetch("params")["cleanup"].equal? true
-      
+
       stemcells = []
       releases = []
 
@@ -59,9 +59,7 @@ module BoshDeploymentResource
     attr_reader :bosh, :manifest, :writer
 
     def validate!(request)
-      ["username", "password", "deployment"].each do |field|
-        request.fetch("source").fetch(field) { raise "source must include '#{field}'" }
-      end
+      request.fetch("source").fetch("deployment") { raise "source must include 'deployment'" }
 
       deployment_name = request.fetch("source").fetch("deployment")
       if manifest.name != deployment_name
@@ -73,7 +71,7 @@ module BoshDeploymentResource
       else
         raise "given cleanup value must be a boolean"
       end
-      
+
       ["manifest", "stemcells", "releases"].each do |field|
         request.fetch("params").fetch(field) { raise "params must include '#{field}'" }
       end
