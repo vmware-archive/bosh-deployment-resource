@@ -20,10 +20,11 @@ target =
   end
 
 auth = BoshDeploymentResource::Auth.parse(source)
+ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])
 
 bosh = BoshDeploymentResource::Bosh.new(
   target,
-  source["ca_cert"],
+  ca_cert,
   auth
 )
 manifest = BoshDeploymentResource::BoshManifest.new(
@@ -37,4 +38,6 @@ begin
 rescue => e
   STDERR.puts e.message
   exit 1
+ensure
+  ca_cert.cleanup
 end

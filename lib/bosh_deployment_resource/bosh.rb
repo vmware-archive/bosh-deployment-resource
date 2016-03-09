@@ -41,7 +41,7 @@ module BoshDeploymentResource
 
     def bosh(command, opts={})
       args = ["-n", "--color", "-t", target]
-      args << ["--ca-cert", @ca_cert] if @ca_cert
+      args << ["--ca-cert", @ca_cert.path] if @ca_cert.provided?
       run(
         "bosh #{args.join(" ")} #{command}",
         @auth.env,

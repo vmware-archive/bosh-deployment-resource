@@ -41,7 +41,7 @@ describe BoshDeploymentResource::Bosh do
   let(:command_runner) { instance_double(BoshDeploymentResource::CommandRunner) }
 
   let(:bosh) { BoshDeploymentResource::Bosh.new(target, ca_cert, auth, command_runner) }
-  let(:ca_cert) { nil }
+  let(:ca_cert) { BoshDeploymentResource::CaCert.new(nil) }
 
   describe ".upload_stemcell" do
     it "runs the command to upload a stemcell" do
@@ -78,10 +78,11 @@ describe BoshDeploymentResource::Bosh do
   end
 
   context "when ca_cert_path is provided" do
-    let(:ca_cert) { "fake-ca-cert-path" }
+    let(:ca_cert) { BoshDeploymentResource::CaCert.new("fake-ca-cert-content") }
+    after { ca_cert.cleanup }
 
     it "passes ca_cert to bosh cli" do
-      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} --ca-cert fake-ca-cert-path -d /path/to/a/manifest.yml deploy}, anything, anything)
+      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} --ca-cert #{ca_cert.path} -d /path/to/a/manifest.yml deploy}, anything, anything)
 
       bosh.deploy("/path/to/a/manifest.yml")
     end
