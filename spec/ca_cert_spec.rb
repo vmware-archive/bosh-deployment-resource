@@ -15,5 +15,9 @@ describe BoshDeploymentResource::CaCert do
       ca_cert.cleanup
       expect(File.exists?(ca_cert_path)).to be_falsey
     end
+
+    it 'is idempotent' do
+      expect { ca_cert.cleanup }.to_not raise_error
+    end
   end
 end

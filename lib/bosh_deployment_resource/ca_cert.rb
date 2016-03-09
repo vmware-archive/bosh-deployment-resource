@@ -18,7 +18,7 @@ module BoshDeploymentResource
     end
 
     def cleanup
-      @file.delete
+      @file.delete if @file
     end
   end
 end
