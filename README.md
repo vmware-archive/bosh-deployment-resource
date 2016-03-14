@@ -59,7 +59,9 @@ the UUID returned by the targeted director.
 * `manifest`: *Required.* Path to a BOSH deployment manifest file.
 
 * `stemcells`: *Required.* An array of globs that should point to where the
-  stemcells used in the deployment can be found.
+  stemcells used in the deployment can be found. Stemcell entries in the
+  manifest with version 'latest' will be updated to the actual provided
+  stemcell versions.
 
 * `releases`: *Required.* An array of globs that should point to where the
   releases used in the deployment can be found.

@@ -22,3 +22,8 @@ resource_pools:
     stemcell:
       name: bosh-warden-boshlite-ubuntu-trusty-ruby_agent
       version: latest
+
+  - name: non-latest
+    stemcell:
+      name: bosh-warden-boshlite-ubuntu-trusty-ruby_agent
+      version: 1000

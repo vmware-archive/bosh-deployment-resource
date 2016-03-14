@@ -8,7 +8,7 @@ require "tmpdir"
 require "stringio"
 
 describe "Out Command" do
-  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, fallback_director_uuid: nil, use_stemcell: nil, use_release: nil, name: "bosh-deployment") }
+  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, fallback_director_uuid: nil, use_stemcell: nil, use_release: nil, name: "bosh-deployment", validate_stemcells: nil) }
   let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, director_uuid: "some-director-uuid") }
   let(:response) { StringIO.new }
   let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest, response) }
@@ -214,6 +214,20 @@ describe "Out Command" do
             }
           })
         end.to raise_error /given deployment name 'bosh-deployment' does not match manifest name 'other-name'/
+      end
+    end
+
+    it "errors when provided stemcells cannot be validated against the manifest" do
+      allow(manifest).to receive(:validate_stemcells).and_raise("invalid")
+
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(bosh).to_not receive(:upload_stemcell)
+
+        expect do
+          command.run(working_dir, request)
+        end.to raise_error "invalid"
       end
     end
 

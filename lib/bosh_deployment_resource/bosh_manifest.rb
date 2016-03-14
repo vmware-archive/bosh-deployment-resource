@@ -18,9 +18,11 @@ module BoshDeploymentResource
     end
 
     def use_stemcell(stemcell)
-      manifest.fetch("resource_pools").
-        find_all { |r| r.fetch("stemcell").fetch("name") == stemcell.name }.
-        each { |r| r.fetch("stemcell").store("version", stemcell.version) }
+      latest_stemcells.find_all { |s|
+        s.fetch("version") == "latest" &&
+          (s.has_key?("name") && s.fetch("name") == stemcell.name) ||
+            (s.has_key?("os") && s.fetch("os") == stemcell.os)
+      }.each { |s| s.store("version", stemcell.version) }
     end
 
     def fallback_director_uuid(new_uuid)
@@ -35,12 +37,39 @@ module BoshDeploymentResource
       file
     end
 
+    def validate_stemcells(stemcells)
+      latest_stemcells.each do |manifest_stemcell|
+        if manifest_stemcell.has_key?("name")
+          matching_stemcells = stemcells.find_all { |s| s.name == manifest_stemcell.fetch("name") }
+        elsif manifest_stemcell.has_key?("os")
+          matching_stemcells = stemcells.find_all { |s| s.os == manifest_stemcell.fetch("os") }
+        end
+
+        if matching_stemcells.size > 1
+          raise stemcell_validation_error_message(manifest_stemcell)
+        end
+      end
+    end
+
     private
 
     attr_reader :manifest
 
+    def stemcell_validation_error_message(manifest_stemcell)
+      name = manifest_stemcell["alias"] || manifest_stemcell["name"]
+      "Cannot update stemcell version in manifest for #{name} from 'latest', found multiple matching stemcells"
+    end
+
     def no_release_found(name)
         Proc.new { raise "#{name} can not be found in manifest releases" }
+    end
+
+    def latest_stemcells
+      if manifest.has_key?("stemcells")
+        manifest.fetch("stemcells")
+      else
+        manifest.fetch("resource_pools").map { |rp| rp.fetch("stemcell") }
+      end.find_all { |s| s.fetch("version") == "latest" }
     end
   end
 end

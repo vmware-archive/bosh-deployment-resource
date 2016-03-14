@@ -1,0 +1,20 @@
+---
+name: concourse
+
+stemcells:
+  - alias: centos
+    name: bosh-warden-boshlite-centos-7-go_agent
+    version: latest
+  - alias: trusty
+    os: ubuntu-trusty
+    version: latest
+  - alias: powerpc
+    os: mac
+    version: latest
+
+releases:
+  - name: concourse
+    version: latest
+  - name: garden-linux
+    version: latest
+

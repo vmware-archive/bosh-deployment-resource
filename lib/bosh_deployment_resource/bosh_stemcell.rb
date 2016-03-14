@@ -6,12 +6,19 @@ require "archive/tar/minitar"
 
 module BoshDeploymentResource
   class BoshStemcell
+    attr_reader :path
+
     def initialize(path)
       @path = path
     end
 
     def name
       manifest.fetch("name")
+    end
+
+    def os
+      # old stemcells don't have os
+      manifest["os"]
     end
 
     def version
@@ -39,7 +46,5 @@ module BoshDeploymentResource
     ensure
       tgz.close if tgz
     end
-
-    attr_reader :path
   end
 end

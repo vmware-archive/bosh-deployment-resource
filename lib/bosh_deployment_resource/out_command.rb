@@ -19,13 +19,15 @@ module BoshDeploymentResource
 
       manifest.fallback_director_uuid(bosh.director_uuid)
 
-      find_stemcells(working_dir, request).each do |stemcell_path|
-        stemcell = BoshStemcell.new(stemcell_path)
+      stemcells = find_stemcells(working_dir, request).map do |stemcell_path|
+        BoshStemcell.new(stemcell_path)
+      end
+
+      manifest.validate_stemcells(stemcells)
+
+      stemcells.each do |stemcell|
         manifest.use_stemcell(stemcell)
-
-        bosh.upload_stemcell(stemcell_path)
-
-        stemcells << stemcell
+        bosh.upload_stemcell(stemcell.path)
       end
 
       find_releases(working_dir, request).each do |release_path|
