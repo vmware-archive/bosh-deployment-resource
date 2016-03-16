@@ -7,7 +7,19 @@ require 'bosh_deployment_resource'
 working_dir = ARGV[0]
 request = JSON.parse(STDIN.read)
 
-command = BoshDeploymentResource::InCommand.new
+source = request.fetch("source")
+auth = BoshDeploymentResource::Auth.parse(source)
+ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])
+
+target = source.fetch("target")
+
+bosh = BoshDeploymentResource::Bosh.new(
+  target,
+  ca_cert,
+  auth
+)
+
+command = BoshDeploymentResource::InCommand.new(bosh)
 
 begin
   command.run(working_dir, request)

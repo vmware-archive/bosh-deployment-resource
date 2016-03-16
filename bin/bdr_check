@@ -2,4 +2,28 @@
 
 require "json"
 
-puts [].to_json
+require 'bosh_deployment_resource'
+
+working_dir = ARGV[0]
+request = JSON.parse(STDIN.read)
+
+source = request.fetch("source")
+target = source.fetch("target")
+
+auth = BoshDeploymentResource::Auth.parse(source)
+ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])
+
+bosh = BoshDeploymentResource::Bosh.new(
+  target,
+  ca_cert,
+  auth
+)
+
+command = BoshDeploymentResource::CheckCommand.new(bosh)
+
+begin
+  command.run(working_dir, request)
+rescue => e
+  STDERR.puts e.message
+  exit 1
+end

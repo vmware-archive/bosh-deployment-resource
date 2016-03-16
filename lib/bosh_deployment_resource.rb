@@ -8,3 +8,4 @@ require "bosh_deployment_resource/auth"
 
 require "bosh_deployment_resource/in_command"
 require "bosh_deployment_resource/out_command"
+require "bosh_deployment_resource/check_command"

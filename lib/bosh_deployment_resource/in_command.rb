@@ -3,12 +3,16 @@ require "time"
 
 module BoshDeploymentResource
   class InCommand
-    def initialize(writer=STDOUT)
+    def initialize(bosh, writer=STDOUT)
       @writer = writer
+      @bosh = bosh
     end
 
     def run(working_dir, request)
       raise "no version specified" unless request["version"]
+
+      deployment_name = request.fetch("source").fetch("deployment")
+      bosh.download_manifest(deployment_name, File.join(working_dir, "manifest.yml"))
 
       writer.puts({
         "version" => request.fetch("version")
@@ -17,6 +21,6 @@ module BoshDeploymentResource
 
     private
 
-    attr_reader :writer
+    attr_reader :writer, :bosh
   end
 end

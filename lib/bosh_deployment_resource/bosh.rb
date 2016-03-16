@@ -22,6 +22,10 @@ module BoshDeploymentResource
       bosh("-d #{manifest_path} deploy")
     end
 
+    def download_manifest(deployment_name, manifest_path)
+      bosh("download manifest #{deployment_name} #{manifest_path}")
+    end
+
     def cleanup
       bosh("cleanup")
     end

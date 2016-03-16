@@ -77,6 +77,13 @@ describe BoshDeploymentResource::Bosh do
     end
   end
 
+  describe ".download_manifest" do
+    it "downloads the manifest" do
+      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} download manifest test_deployment manifest_path}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, {})
+      bosh.download_manifest("test_deployment", "manifest_path")
+    end
+  end
+
   context "when ca_cert_path is provided" do
     let(:ca_cert) { BoshDeploymentResource::CaCert.new("fake-ca-cert-content") }
     after { ca_cert.cleanup }

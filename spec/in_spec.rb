@@ -5,13 +5,15 @@ require "stringio"
 require "time"
 
 describe "In Command" do
-  let(:working_dir) { "/haha/this/is/not/used" }
   let(:response) { StringIO.new }
-  let(:command) { BoshDeploymentResource::InCommand.new(response) }
+  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, download_manifest: nil) }
+  let(:command) { BoshDeploymentResource::InCommand.new(bosh, response) }
 
   def run_command
-    command.run(working_dir, request)
-    response.rewind
+    Dir.mktmpdir do |working_dir|
+      command.run(working_dir, request)
+      response.rewind
+    end
   end
 
   context "when the version is given on STDIN" do
@@ -40,6 +42,13 @@ describe "In Command" do
 
       output = JSON.parse(response.read)
       expect(output).to eq(expected)
+    end
+
+    it "downloads the manifest" do
+      Dir.mktmpdir do |working_dir|
+        expect(bosh).to receive(:download_manifest).with("bosh-deployment", File.join(working_dir, "manifest.yml"))
+        command.run(working_dir, request)
+      end
     end
   end
 
