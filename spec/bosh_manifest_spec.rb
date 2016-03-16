@@ -219,4 +219,55 @@ describe BoshDeploymentResource::BoshManifest do
       end
     end
   end
+
+  describe "#shasum" do
+    it "outputs the version as the sha of the values of the sorted, parsed manifest" do
+      actual = manifest.shasum
+
+      d = Digest::SHA1.new
+
+      d << 'name'                                             # name: concourse
+      d << 'concourse'                                        #
+      d << 'releases'                                         # releases:
+      d << 'name'                                             #   - name: concourse
+      d << 'concourse'                                        #
+      d << 'version'                                          #     version: latest
+      d << 'latest'                                           #
+      d << 'name'                                             #   - name: garden-linux
+      d << 'garden-linux'                                     #
+      d << 'version'                                          #     version: latest
+      d << 'latest'                                           #
+      d << 'resource_pools'                                   # resource_pools:
+      d << 'name'                                             #   - name: fast
+      d << 'fast'                                             #
+      d << 'stemcell'                                         #     stemcell:
+      d << 'name'                                             #       name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+      d << 'bosh-warden-boshlite-ubuntu-trusty-go_agent'      #
+      d << 'version'                                          #       version: latest
+      d << 'latest'                                           #
+      d << 'name'                                             #   - name: other-fast
+      d << 'other-fast'                                       #
+      d << 'stemcell'                                         #     stemcell:
+      d << 'name'                                             #       name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+      d << 'bosh-warden-boshlite-ubuntu-trusty-go_agent'      #
+      d << 'version'                                          #       version: latest
+      d << 'latest'                                           #
+      d << 'name'                                             #   - name: slow
+      d << 'slow'                                             #
+      d << 'stemcell'                                         #     stemcell:
+      d << 'name'                                             #       name: bosh-warden-boshlite-ubuntu-trusty-ruby_agent
+      d << 'bosh-warden-boshlite-ubuntu-trusty-ruby_agent'    #
+      d << 'version'                                          #       version: latest
+      d << 'latest'                                           #
+      d << 'name'                                             #   - name: non-latest
+      d << 'non-latest'                                       #
+      d << 'stemcell'                                         #     stemcell:
+      d << 'name'                                             #       name: bosh-warden-boshlite-ubuntu-trusty-ruby_agent
+      d << 'bosh-warden-boshlite-ubuntu-trusty-ruby_agent'    #
+      d << 'version'                                          #       version: 1000
+      d << '1000'                                             #
+
+      expect(actual).to eq(d.hexdigest)
+    end
+  end
 end

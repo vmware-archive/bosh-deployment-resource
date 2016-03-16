@@ -40,13 +40,12 @@ module BoshDeploymentResource
       end
 
       new_manifest = manifest.write!
-      manifest_sha1 = Digest::SHA1.file(new_manifest.path).hexdigest
 
       bosh.deploy(new_manifest.path)
 
       response = {
         "version" => {
-          "manifest_sha1" => manifest_sha1
+          "manifest_sha1" => manifest.shasum
         },
         "metadata" =>
           stemcells.map { |s| { "name" => "stemcell", "value" => "#{s.name} v#{s.version}" } } +

@@ -8,7 +8,7 @@ require "tmpdir"
 require "stringio"
 
 describe "Out Command" do
-  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, fallback_director_uuid: nil, use_stemcell: nil, use_release: nil, name: "bosh-deployment", validate_stemcells: nil) }
+  let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, fallback_director_uuid: nil, use_stemcell: nil, use_release: nil, name: "bosh-deployment", validate_stemcells: nil, shasum: "1234") }
   let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, director_uuid: "some-director-uuid") }
   let(:response) { StringIO.new }
   let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest, response) }
@@ -93,7 +93,7 @@ describe "Out Command" do
         command.run(working_dir, request)
 
         expect(JSON.parse(response.string)["version"]).to eq({
-          "manifest_sha1" => Digest::SHA1.file(written_manifest.path).hexdigest
+          "manifest_sha1" => manifest.shasum
         })
       end
     end

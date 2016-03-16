@@ -7,13 +7,26 @@ module BoshDeploymentResource
       @writer = writer
     end
 
-    def run(working_dir, request)
+    def run(request)
       deployment_name = request.fetch("source").fetch("deployment")
-      manifest_path = File.join(working_dir, "manifest.yml")
-      bosh.download_manifest(deployment_name, manifest_path)
 
-      manifest_sha1 = Digest::SHA1.file(manifest_path).hexdigest
-      writer.puts([{ "manifest_sha1" => manifest_sha1 }].to_json)
+      manifest_sha = ""
+
+      Dir.mktmpdir do |working_dir|
+        manifest_path = File.join(working_dir, "manifest.yml")
+        bosh.download_manifest(deployment_name, manifest_path)
+        manifest = BoshDeploymentResource::BoshManifest.new(manifest_path)
+        manifest_sha = manifest.shasum
+      end
+
+      versions = []
+
+      existing_version = request.fetch("version")
+      if existing_version == nil || manifest_sha != existing_version.fetch("manifest_sha1")
+        versions << { "manifest_sha1" => manifest_sha }
+      end
+
+      writer.puts(versions.to_json)
     end
 
     private

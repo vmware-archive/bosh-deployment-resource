@@ -37,6 +37,27 @@ module BoshDeploymentResource
       file
     end
 
+    def shasum
+      sum = -> (o, digest) {
+        case
+        when o.respond_to?(:keys)
+          o.sort.each do |k,v|
+            digest << k.to_s
+            sum[v, digest]
+          end
+        when o.respond_to?(:each)
+          o.each { |x| sum[x, digest] }
+        else
+          digest << o.to_s
+        end
+      }
+
+      d = Digest::SHA1.new
+      sum[manifest, d]
+
+      d.hexdigest
+    end
+
     def validate_stemcells(stemcells)
       latest_stemcells.each do |manifest_stemcell|
         if manifest_stemcell.has_key?("name")

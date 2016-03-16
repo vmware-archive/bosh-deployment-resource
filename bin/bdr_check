@@ -4,7 +4,6 @@ require "json"
 
 require 'bosh_deployment_resource'
 
-working_dir = ARGV[0]
 request = JSON.parse(STDIN.read)
 
 source = request.fetch("source")
@@ -22,7 +21,7 @@ bosh = BoshDeploymentResource::Bosh.new(
 command = BoshDeploymentResource::CheckCommand.new(bosh)
 
 begin
-  command.run(working_dir, request)
+  command.run(request)
 rescue => e
   STDERR.puts e.message
   exit 1
