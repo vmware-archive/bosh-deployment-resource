@@ -9,7 +9,7 @@ require "stringio"
 
 describe "Out Command" do
   let(:manifest) { instance_double(BoshDeploymentResource::BoshManifest, fallback_director_uuid: nil, use_stemcell: nil, use_release: nil, name: "bosh-deployment", validate_stemcells: nil, shasum: "1234") }
-  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, director_uuid: "some-director-uuid") }
+  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, upload_stemcell: nil, upload_release: nil, deploy: nil, director_uuid: "some-director-uuid", target: "bosh-target") }
   let(:response) { StringIO.new }
   let(:command) { BoshDeploymentResource::OutCommand.new(bosh, manifest, response) }
 
@@ -86,14 +86,15 @@ describe "Out Command" do
       end
     end
 
-    it "emits a sha1 checksum of the manifest as the version" do
+    it "emits the version as the manifest_sha1 and target" do
       in_dir do |working_dir|
         add_default_artefacts working_dir
 
         command.run(working_dir, request)
 
         expect(JSON.parse(response.string)["version"]).to eq({
-          "manifest_sha1" => manifest.shasum
+          "manifest_sha1" => manifest.shasum,
+          "target" => "bosh-target",
         })
       end
     end
