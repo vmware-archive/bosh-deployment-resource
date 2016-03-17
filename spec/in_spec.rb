@@ -6,7 +6,7 @@ require "time"
 
 describe "In Command" do
   let(:response) { StringIO.new }
-  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, download_manifest: nil, target: nil) }
+  let(:bosh) { instance_double(BoshDeploymentResource::Bosh, download_manifest: nil, target: "") }
   let(:command) { BoshDeploymentResource::InCommand.new(bosh, response) }
 
   def run_command
@@ -70,7 +70,7 @@ describe "In Command" do
 
     context "when the source does not have a target" do
       before do
-        allow(bosh).to receive(:target).and_return(nil)
+        allow(bosh).to receive(:target).and_return("")
       end
 
       it "does not try to download the manifest" do

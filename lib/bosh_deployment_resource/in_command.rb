@@ -11,7 +11,7 @@ module BoshDeploymentResource
     def run(working_dir, request)
       raise "no version specified" unless request["version"]
 
-      if bosh.target && bosh.target != ""
+      if bosh.target != ""
         deployment_name = request.fetch("source").fetch("deployment")
         bosh.download_manifest(deployment_name, File.join(working_dir, "manifest.yml"))
 
