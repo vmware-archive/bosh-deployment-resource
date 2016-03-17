@@ -12,7 +12,7 @@ module BoshDeploymentResource
 
       versions = []
 
-      if bosh.target != ""
+      if bosh.target && bosh.target != ""
         Dir.mktmpdir do |working_dir|
           manifest_path = File.join(working_dir, "manifest.yml")
           bosh.download_manifest(deployment_name, manifest_path)

@@ -135,7 +135,7 @@ EOF
 
   context "when the source does not have a target" do
     before do
-      allow(bosh).to receive(:target).and_return("")
+      allow(bosh).to receive(:target).and_return(nil)
     end
 
     it "does not try to download the manifest" do

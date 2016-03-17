@@ -43,16 +43,16 @@ describe "In Command" do
       expect(output).to eq(expected)
     end
 
-    it "downloads the manifest" do
-      Dir.mktmpdir do |working_dir|
-        expect(bosh).to receive(:download_manifest).with("bosh-deployment", File.join(working_dir, "manifest.yml"))
-        command.run(working_dir, request)
-      end
-    end
-
     context "when the source has a target" do
       before do
         allow(bosh).to receive(:target).and_return("bosh-target")
+      end
+
+      it "downloads the manifest" do
+        Dir.mktmpdir do |working_dir|
+          expect(bosh).to receive(:download_manifest).with("bosh-deployment", File.join(working_dir, "manifest.yml"))
+          command.run(working_dir, request)
+        end
       end
 
       it "writes the target to a file called target" do
@@ -70,7 +70,7 @@ describe "In Command" do
 
     context "when the source does not have a target" do
       before do
-        allow(bosh).to receive(:target).and_return("")
+        allow(bosh).to receive(:target).and_return(nil)
       end
 
       it "does not try to download the manifest" do
