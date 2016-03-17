@@ -7,7 +7,7 @@ require 'bosh_deployment_resource'
 request = JSON.parse(STDIN.read)
 
 source = request.fetch("source")
-target = source.fetch("target")
+target = source["target"]
 
 auth = BoshDeploymentResource::Auth.parse(source)
 ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])

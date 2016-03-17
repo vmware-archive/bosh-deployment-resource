@@ -3,6 +3,8 @@ require "pty"
 
 module BoshDeploymentResource
   class Bosh
+    attr_reader :target
+
     def initialize(target, ca_cert, auth, command_runner=CommandRunner.new)
       @target = target
       @ca_cert = ca_cert
@@ -41,7 +43,7 @@ module BoshDeploymentResource
 
     private
 
-    attr_reader :target, :command_runner
+    attr_reader :command_runner
 
     def bosh(command, opts={})
       args = ["-n", "--color", "-t", target]

@@ -11,7 +11,7 @@ source = request.fetch("source")
 auth = BoshDeploymentResource::Auth.parse(source)
 ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])
 
-target = source.fetch("target")
+target = source["target"]
 
 bosh = BoshDeploymentResource::Bosh.new(
   target,
