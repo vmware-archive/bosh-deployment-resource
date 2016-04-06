@@ -86,15 +86,14 @@ describe "Out Command" do
       end
     end
 
-    it "emits the version as the manifest_sha1 and target" do
+    it "emits the version as the manifest_sha1" do
       in_dir do |working_dir|
         add_default_artefacts working_dir
 
         command.run(working_dir, request)
 
         expect(JSON.parse(response.string)["version"]).to eq({
-          "manifest_sha1" => manifest.shasum,
-          "target" => "bosh-target",
+          "manifest_sha1" => manifest.shasum
         })
       end
     end

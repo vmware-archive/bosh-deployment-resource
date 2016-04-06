@@ -45,8 +45,7 @@ module BoshDeploymentResource
 
       response = {
         "version" => {
-          "manifest_sha1" => manifest.shasum,
-          "target" => bosh.target
+          "manifest_sha1" => manifest.shasum
         },
         "metadata" =>
           stemcells.map { |s| { "name" => "stemcell", "value" => "#{s.name} v#{s.version}" } } +
