@@ -20,7 +20,15 @@ target =
   end
 
 auth = BoshDeploymentResource::Auth.parse(source)
-ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])
+
+ca_cert_file = source["ca_cert_file"]
+ca_cert_contents =
+  if ca_cert_file
+    File.read(File.expand_path(ca_cert_file, working_dir))
+  else
+    source["ca_cert"]
+  end
+ca_cert = BoshDeploymentResource::CaCert.new(ca_cert_contents)
 
 bosh = BoshDeploymentResource::Bosh.new(
   target,
