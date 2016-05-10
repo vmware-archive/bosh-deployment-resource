@@ -11,8 +11,10 @@ and then deploy them.
   parameters, as documented below.
 
 When using BOSH with default authentication:
-* `username`: *Required.* The username for the BOSH director.
-* `password`: *Required.* The password for the BOSH director.
+* `username`: *Optional.* The username for the BOSH director. If omitted, `username_file` must be specified via `out`
+  parameters, as documented below.
+* `password`: *Optional.* The password for the BOSH director. If omitted, `password_file` must be specified via `out`
+  parameters, as documented below.
 
 When using BOSH with [UAA authentication](https://bosh.io/docs/director-users-uaa.html#client-login):
 * `client_id`: *Required.* The UAA client ID for the BOSH director.
@@ -75,4 +77,12 @@ the UUID returned by the targeted director.
   resource](https://github.com/concourse/pool-resource).
 
   If both `target_file` and `target` are specified, `target_file` takes
+  precedence.
+
+* `username_file`: *Optional.* Path to a file containing a BOSH username.
+  If both `username_file` and `username` are specified, `username_file` takes
+  precedence.
+
+* `password_file`: *Optional.* Path to a file containing a BOSH password.
+  If both `password_file` and `password` are specified, `password_file` takes
   precedence.
