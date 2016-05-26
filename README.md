@@ -18,7 +18,7 @@ When using BOSH with [UAA authentication](https://bosh.io/docs/director-users-ua
 * `client_id`: *Required.* The UAA client ID for the BOSH director.
 * `client_secret`: *Required.* The UAA client secret for the BOSH director.
 
-* `ca_cert`: *Optional.* Path to CA certificate used to validate SSL connections to Director and UAA.
+* `ca_cert`: *Optional.* CA certificate used to validate SSL connections to Director and UAA.
 
 ### Example
 
