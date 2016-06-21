@@ -1,5 +1,6 @@
 FROM concourse/buildroot:ruby
 
+ADD ssh /usr/bin/ssh
 ADD gems /tmp/gems
 
 RUN gem install /tmp/gems/*.gem --no-document && \
