@@ -12,7 +12,7 @@ module BoshDeploymentResource
 
       if cert && File.exist?(cert)
         # Assumes UAA with SSL cert...
-        run("bosh -n target #{target} --ca-cert #{cert}")
+        run("bosh --ca-cert #{cert} -n target #{target}")
 
         # TODO: Fix "stty: standard input: Inappropriate ioctl for device" errors
         run(
