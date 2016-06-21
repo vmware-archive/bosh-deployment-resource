@@ -8,7 +8,7 @@ jobs:
     file: bosh-deployment-resource/build.yml
   - put: docker-image-repo
     params:
-      build: bosh-deployment-resource
+      build: docker-build-tmp
 
 resources:
 - name: bosh-deployment-resource
