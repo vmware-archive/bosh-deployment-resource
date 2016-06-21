@@ -7,7 +7,7 @@ inputs:
 - name: bosh-deployment-resource
 
 outputs:
-- name: dropbear-ssh
+- name: docker-build-tmp
 
 run:
   path: "/bin/sh"
@@ -17,4 +17,5 @@ run:
     cd bosh-deployment-resource
     ./scripts/ci
     ./scripts/add_dropbear
-    cp ssh ../dropbear-ssh
+    tar -C . -czhf /tmp/build.tar.gz .
+    tar -C ../docker-build-tmp -xzf /tmp/build.tar.gz
