@@ -5,8 +5,8 @@ set -e -x
 mkdir -p /tmp/dropbear
 (cd /tmp/dropbear && \
   curl http://mirrors.kernel.org/ubuntu/pool/universe/d/dropbear/dropbear_2013.60-1ubuntu2_amd64.deb -o dropbear.deb && \
-  ar -x dropbear.deb && \
- tar -zxf data.tar.xz
+  ar -xv dropbear.deb && \
+  tar -zvxf data.tar.xz
 )
 cp /tmp/dropbear/usr/bin/dbclient ./ssh
 rm -rf /tmp/dropbear
