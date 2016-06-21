@@ -1,0 +1,26 @@
+---
+jobs:
+- name: push-18f-bosh-deployment-resource
+  plan:
+  - get: bosh-deployment-resource
+    trigger: true
+  - task: build 
+    file: bosh-deployment-resource/build.yml
+  - put: docker-image-repo
+    params:
+      build: bosh-deployment-resource
+
+resources:
+- name: bosh-deployment-resource
+  type: git
+  source:
+    uri: {{bosh-deployment-resource-git-url}}
+    branch: {{bosh-deployment-resource-git-branch}}
+
+- name: docker-image-repo
+  type: docker-image
+  source:
+    email: {{docker-email}}
+    username: {{docker-username}}
+    password: {{docker-password}}
+    repository: {{docker-repository}}
