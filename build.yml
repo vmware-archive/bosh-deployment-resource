@@ -8,4 +8,9 @@ inputs:
   path: .
 
 run:
-  path: scripts/ci
+  path: "/bin/sh"
+    args:
+    - -exc
+    - |
+      scripts/ci
+      scripts/add_dropbear
