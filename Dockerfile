@@ -1,4 +1,4 @@
-FROM concourse/busyboxplus:ruby
+FROM concourse/buildroot:ruby
 
 ADD gems /tmp/gems
 
