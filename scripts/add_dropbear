@@ -9,5 +9,6 @@ mkdir -p /tmp/dropbear
   tar -vxf data.tar.xz
 )
 cp /tmp/dropbear/usr/bin/dbclient ./ssh
+cp /tmp/dropbear/usr/bin/dropbearkey ./ssh-keygen
 rm -rf /tmp/dropbear
 
