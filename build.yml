@@ -9,8 +9,8 @@ inputs:
 
 run:
   path: "/bin/sh"
-    args:
-    - -exc
-    - |
-      scripts/ci
-      scripts/add_dropbear
+  args:
+  - -exc
+  - |
+    scripts/ci
+    scripts/add_dropbear
