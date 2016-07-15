@@ -13,7 +13,7 @@ module BoshDeploymentResource
 
     def use_release(release)
       manifest.fetch("releases").
-        find { |r| r.fetch("name") == release.name }.
+        find(no_release_found(release.name)) { |r| r.fetch("name") == release.name }.
         store("version", release.version)
     end
 
@@ -38,5 +38,9 @@ module BoshDeploymentResource
     private
 
     attr_reader :manifest
+
+    def no_release_found(name)
+        Proc.new { raise "#{name} can not be found in manifest releases" }
+    end
   end
 end

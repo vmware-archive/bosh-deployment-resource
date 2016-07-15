@@ -96,4 +96,12 @@ describe BoshDeploymentResource::BoshManifest do
       }
     ]
   end
+
+  it "errors if a release is called which isn't defined in the manifest releases list" do
+    unfindable_release = double(name: "wrong_name", version: 0)
+
+    expect do
+        manifest.use_release(unfindable_release)
+    end.to raise_error /#{unfindable_release.name} can not be found in manifest releases/
+  end
 end
