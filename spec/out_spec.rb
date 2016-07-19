@@ -46,6 +46,10 @@ describe "Out Command" do
     cp "spec/fixtures/release.tgz", working_dir, "releases", "release.tgz"
     cp "spec/fixtures/release.tgz", working_dir, "releases", "other-release.tgz"
     touch working_dir, "releases", "not-release.txt"
+
+    cp "spec/fixtures/tile.pivotal", working_dir, "tiles", "tile.pivotal"
+    cp "spec/fixtures/tile.pivotal", working_dir, "tiles", "other-tile.pivotal"
+    touch working_dir, "tiles", "not-tile.txt"
   end
 
   before do
@@ -71,6 +75,7 @@ describe "Out Command" do
       }
     }
   }
+
 
   context "with valid inputs" do
     it "uploads matching stemcells to the director" do
@@ -328,7 +333,7 @@ describe "Out Command" do
                 "releases" => "release.tgz"
               }
             })
-          end.to raise_error /releases must be an array of globs/
+          end.to raise_error /either releases or tiles must be an array of globs/
         end
       end
 
@@ -343,5 +348,71 @@ describe "Out Command" do
         end
       end
     end
+  end
+
+  context "with tiles" do
+    let(:request) {
+      {
+        "source" => {
+          "target" => "http://bosh.example.com",
+          "username" => "bosh-username",
+          "password" => "bosh-password",
+          "deployment" => "bosh-deployment",
+        },
+        "params" => {
+          "manifest" => "manifest/deployment.yml",
+          "stemcells" => [
+            "stemcells/*.tgz"
+          ],
+          "tiles" => [
+            "tiles/*.pivotal"
+          ]
+        }
+      }
+    }
+   context "And no releases defined" do
+    it "uploads matching stemcells to the director" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(bosh).to receive(:upload_stemcell).
+          with(File.join(working_dir, "stemcells", "stemcell.tgz"))
+        expect(bosh).to receive(:upload_stemcell).
+          with(File.join(working_dir, "stemcells", "other-stemcell.tgz"))
+
+        command.run(working_dir, request)
+      end
+    end
+
+    it "emits the release/stemcell versions in the metadata" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        command.run(working_dir, request)
+
+        expect(JSON.parse(response.string)["metadata"]).to eq([
+          {"name" => "stemcell", "value" => "bosh-aws-xen-hvm-ubuntu-trusty-go_agent v2905"},
+          {"name" => "stemcell", "value" => "bosh-aws-xen-hvm-ubuntu-trusty-go_agent v2905"},
+          {"name" => "release", "value" => "concourse_ala_tile v0.43.0"},
+          {"name" => "release", "value" => "concourse_ala_tile v0.43.0"},
+          {"name" => "release", "value" => "concourse_ala_tile v0.43.0"},
+          {"name" => "release", "value" => "concourse_ala_tile v0.43.0"}
+        ])
+      end
+    end
+
+    it "uploads matching releases to the director" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(bosh).to receive(:upload_release).
+          with(/unpacked_tile_.+\/releases\/release.tgz/).twice
+        expect(bosh).to receive(:upload_release).
+          with(/unpacked_tile_.+\/releases\/other-release.tgz/).twice
+
+        command.run(working_dir, request)
+      end
+    end
+   end
   end
 end

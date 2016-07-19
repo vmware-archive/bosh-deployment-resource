@@ -74,12 +74,21 @@ module BoshDeploymentResource
         raise "given cleanup value must be a boolean"
       end
 
-      ["manifest", "stemcells", "releases"].each do |field|
+      ["manifest", "stemcells"].each do |field|
         request.fetch("params").fetch(field) { raise "params must include '#{field}'" }
       end
 
+
+      request.fetch("params").fetch("releases") {
+        request.fetch("params").fetch("tiles") {
+          raise "params must include either releases or tiles"
+        }
+      }
+
       raise "stemcells must be an array of globs" unless enumerable?(request.fetch("params").fetch("stemcells"))
-      raise "releases must be an array of globs" unless enumerable?(request.fetch("params").fetch("releases"))
+      raise "either releases or tiles must be an array of globs" unless
+        enumerable?(request.fetch("params").fetch("releases", nil)) ||
+        enumerable?(request.fetch("params").fetch("tiles", nil))
     end
 
     def find_stemcells(working_dir, request)
@@ -93,10 +102,32 @@ module BoshDeploymentResource
     def find_releases(working_dir, request)
       globs = request.
         fetch("params").
-        fetch("releases")
+        fetch("releases", [])
 
-      glob(working_dir, globs)
+      release_paths = glob(working_dir, globs)
+
+      release_paths.concat(find_and_unpack_tiles(working_dir, request))
+      release_paths
     end
+
+    def find_and_unpack_tiles(working_dir, request)
+      globs = request.
+        fetch("params").
+        fetch("tiles",[])
+
+      tile_paths = glob(working_dir, globs)
+      release_paths = []
+      tile_paths.each do |tile_path|
+        unpacked_tile_dir = Dir.mktmpdir("unpacked_tile_")
+        unzip_output = `unzip #{tile_path} -d #{unpacked_tile_dir} releases/*`
+        unzip_status = $?.to_i
+        raise "UNZIP FAILED. TROLOLOLOLOL: #{unzip_output}\n #{unzip_status}" unless unzip_status == 0
+        release_paths.concat glob(unpacked_tile_dir, ["releases/*.tgz"])
+      end
+
+      release_paths
+    end
+
 
     def glob(working_dir, globs)
       paths = []
