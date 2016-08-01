@@ -10,6 +10,7 @@ module BoshDeploymentResource
       @ca_cert = ca_cert
       @auth = auth
       @command_runner = command_runner
+      @no_redact = false
     end
 
     def upload_stemcell(path)
@@ -21,7 +22,11 @@ module BoshDeploymentResource
     end
 
     def deploy(manifest_path)
-      bosh("-d #{manifest_path} deploy")
+      if @no_redact
+          bosh("-d #{manifest_path} deploy --no-redact")
+      else
+          bosh("-d #{manifest_path} deploy")
+      end
     end
 
     def download_manifest(deployment_name, manifest_path)
