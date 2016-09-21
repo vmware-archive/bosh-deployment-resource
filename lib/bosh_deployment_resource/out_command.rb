@@ -13,7 +13,7 @@ module BoshDeploymentResource
       validate! request
 
       bosh.cleanup if request.fetch("params")["cleanup"].equal? true
-      bosh.no_redact = request.fetch("params")["no_redact"] || false
+      bosh.enable_redact if request.fetch("params")["no_redact"]
       stemcells = []
       releases = []
 

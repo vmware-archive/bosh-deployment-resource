@@ -13,6 +13,14 @@ module BoshDeploymentResource
       @no_redact = false
     end
 
+    def enable_redact()
+      @no_redact = true
+    end
+    
+    def disable_redact()
+      @disable_redact = false
+    end
+
     def upload_stemcell(path)
       bosh("upload stemcell #{path} --skip-if-exists")
     end
