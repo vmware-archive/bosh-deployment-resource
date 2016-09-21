@@ -65,9 +65,7 @@ describe BoshDeploymentResource::Bosh do
 
       bosh.deploy("/path/to/a/manifest.yml")
     end
-  end
 
-  describe ".deploy" do
     it "runs the command to deploy with --no-redact" do
       expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} -d /path/to/a/manifest.yml deploy --no-redact}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password}, {})
       bosh.enable_redact
@@ -75,6 +73,7 @@ describe BoshDeploymentResource::Bosh do
       bosh.disable_redact
     end
   end
+
 
   describe ".director_uuid" do
     it "collects the output of status --uuid" do
