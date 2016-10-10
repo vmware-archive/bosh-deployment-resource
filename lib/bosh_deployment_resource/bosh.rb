@@ -10,16 +10,8 @@ module BoshDeploymentResource
       @ca_cert = ca_cert
       @auth = auth
       @command_runner = command_runner
-      @no_redact = false
     end
 
-    def enable_redact()
-      @no_redact = true
-    end
-    
-    def disable_redact()
-      @disable_redact = false
-    end
 
     def upload_stemcell(path)
       bosh("upload stemcell #{path} --skip-if-exists")
@@ -29,8 +21,8 @@ module BoshDeploymentResource
       bosh("upload release #{path} --skip-if-exists")
     end
 
-    def deploy(manifest_path)
-      if @no_redact
+    def deploy(manifest_path,no_redact=false)
+      if no_redact
           bosh("-d #{manifest_path} deploy --no-redact")
       else
           bosh("-d #{manifest_path} deploy")
