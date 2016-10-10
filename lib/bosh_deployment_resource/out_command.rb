@@ -13,7 +13,6 @@ module BoshDeploymentResource
       validate! request
 
       bosh.cleanup if request.fetch("params")["cleanup"].equal? true
-
       stemcells = []
       releases = []
 
@@ -40,8 +39,9 @@ module BoshDeploymentResource
       end
 
       new_manifest = manifest.write!
+      no_redact = request.fetch("params")["no_redact"] || false
 
-      bosh.deploy(new_manifest.path)
+      bosh.deploy(new_manifest.path,no_redact)
 
       response = {
         "version" => {

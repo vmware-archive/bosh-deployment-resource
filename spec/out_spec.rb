@@ -166,7 +166,7 @@ describe "Out Command" do
         expect(manifest).to receive(:use_stemcell)
         expect(manifest).to receive(:fallback_director_uuid).with("abcdef")
 
-        expect(bosh).to receive(:deploy).with(written_manifest.path)
+        expect(bosh).to receive(:deploy).with(written_manifest.path,false)
 
         command.run(working_dir, request)
       end
@@ -182,6 +182,7 @@ describe "Out Command" do
       end
     end
 
+
     it "runs a bosh cleanup when the cleanup parameter is set to true" do
       request.fetch("params").store("cleanup", true)
 
@@ -190,6 +191,16 @@ describe "Out Command" do
 
         expect(bosh).to receive(:cleanup)
 
+        command.run(working_dir, request)
+      end
+    end
+
+    it "runs a bosh no-redact when the no_redact parameter is set to true" do
+      request.fetch("params").store("no_redact", true)
+
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+        expect(bosh).to receive(:deploy).with(anything,true)
         command.run(working_dir, request)
       end
     end
