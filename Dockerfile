@@ -5,7 +5,7 @@ COPY ssh /usr/bin/
 COPY ssh-keygen /usr/bin
 
 RUN gem install /tmp/gems/*.gem --no-document && \
-    gem install bosh_cli -v 1.3202.0 --no-document
+    gem install bosh_cli -v 1.3262.24.0 --no-document
 
 ADD . /tmp/resource-gem
 
