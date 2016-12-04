@@ -41,6 +41,12 @@ module BoshDeploymentResource
       new_manifest = manifest.write!
       no_redact = request.fetch("params")["no_redact"] || false
 
+      cloud_config_path = request.fetch("params")["cloud_config"]
+      if cloud_config_path
+        cloud_config_path = File.join(working_dir, cloud_config_path)
+        bosh.update_cloud_config(cloud_config_path)
+      end
+
       bosh.deploy(new_manifest.path,no_redact)
 
       response = {

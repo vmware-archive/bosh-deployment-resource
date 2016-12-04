@@ -182,7 +182,6 @@ describe "Out Command" do
       end
     end
 
-
     it "runs a bosh cleanup when the cleanup parameter is set to true" do
       request.fetch("params").store("cleanup", true)
 
@@ -201,6 +200,25 @@ describe "Out Command" do
       in_dir do |working_dir|
         add_default_artefacts working_dir
         expect(bosh).to receive(:deploy).with(anything,true)
+        command.run(working_dir, request)
+      end
+    end
+
+    it "updates the cloud config when the cloud_config parameter is set" do
+      request.fetch("params").store("cloud_config", "some/path.yml")
+
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+        expect(bosh).to receive(:update_cloud_config).
+          with(File.join(working_dir, "some/path.yml"))
+        command.run(working_dir, request)
+      end
+    end
+
+    it "does not update the cloud config when the cloud_config parameter is not set" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+        expect(bosh).not_to receive(:update_cloud_config)
         command.run(working_dir, request)
       end
     end
