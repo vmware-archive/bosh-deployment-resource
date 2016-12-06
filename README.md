@@ -68,7 +68,9 @@ the UUID returned by the targeted director.
 
 * `cleanup`: *Optional* An boolean that specifies if a bosh cleanup should be
   run before deployment. Defaults to false.
+
 * `no_redact`: *Optional* Removes redacted from Bosh output. Defaults to false.
+
 * `target_file`: *Optional.* Path to a file containing a BOSH director address.
   This allows the target to be determined at runtime, e.g. by acquiring a BOSH
   lite instance using the [Pool
@@ -82,10 +84,11 @@ the UUID returned by the targeted director.
   password: some-password
 ```
 
-  If both `target_file` and `target` are specified, `target_file` takes
-  precedence.
+#### Precedence of Bosh Target
 
-  If both `target_file` and  `director_file` are specified, then `director_file`
-  takes precedence. If the `director_file` contains a username or password it
-  will override anything that has been specified in source.
+If `director_file` is specified, then it takes precedence when determing
+the bosh target. If the `director_file` contains a username or password it
+will override anything that has been specified in source.
 
+If `director_file` is not specified, but `target_file` and `target` are
+specified, `target_file` takes precedence.
