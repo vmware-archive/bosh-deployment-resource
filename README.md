@@ -7,7 +7,7 @@ and then deploy them.
 
 * `deployment`: *Required.* The name of the deployment.
 * `target`: *Optional.* The address of the BOSH director which will be used for
-  the deployment. If omitted, `target_file` must be specified via `out`
+  the deployment. If omitted, `target_file` or `director_file` must be specified via `out`
   parameters, as documented below.
 
 When using BOSH with default authentication:
@@ -73,6 +73,19 @@ the UUID returned by the targeted director.
   This allows the target to be determined at runtime, e.g. by acquiring a BOSH
   lite instance using the [Pool
   resource](https://github.com/concourse/pool-resource).
+* `director_file`: *Optional.* Path to a yaml file contain that looks as such:
+
+```yaml
+  ---
+  target: http://example.com/bosh:255555
+  username: some-username
+  password: some-password
+```
 
   If both `target_file` and `target` are specified, `target_file` takes
   precedence.
+
+  If both `target_file` and  `director_file` are specified, then `director_file`
+  takes precedence. If the `director_file` contains a username or password it
+  will override anything that has been specified in source.
+
