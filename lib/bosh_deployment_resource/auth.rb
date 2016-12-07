@@ -27,6 +27,8 @@ module BoshDeploymentResource
       new(options.fetch("username"), options.fetch("password"))
     end
 
+    attr_reader :username, :password
+
     def initialize(username, password)
       @username = username
       @password = password

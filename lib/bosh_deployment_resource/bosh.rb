@@ -12,7 +12,6 @@ module BoshDeploymentResource
       @command_runner = command_runner
     end
 
-
     def upload_stemcell(path)
       bosh("upload stemcell #{path} --skip-if-exists")
     end
@@ -35,6 +34,14 @@ module BoshDeploymentResource
 
     def cleanup
       bosh("cleanup")
+    end
+
+    def username
+      @auth.username
+    end
+
+    def password
+      @auth.password
     end
 
     def director_uuid
