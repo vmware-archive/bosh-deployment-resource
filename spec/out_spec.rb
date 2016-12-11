@@ -193,6 +193,30 @@ describe "Out Command" do
         command.run(working_dir, request)
       end
     end
+
+    it "does update a bosh manifest with stemcell and releases when the no_version_update parameter is NOT passed" do
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(manifest).to receive(:use_stemcell)
+        expect(manifest).to receive(:use_release)
+
+        command.run(working_dir, request)
+      end
+    end
+
+    it "does NOT update a bosh manifest with stemcell and releases when the no_version_update parameter set to true" do
+      request.fetch("params").store("no_version_update", true)
+
+      in_dir do |working_dir|
+        add_default_artefacts working_dir
+
+        expect(manifest).to_not receive(:use_stemcell)
+        expect(manifest).to_not receive(:use_release)
+
+        command.run(working_dir, request)
+      end
+    end
   end
 
   context "with invalid inputs" do
@@ -288,6 +312,27 @@ describe "Out Command" do
             }
           })
         end.to raise_error /given cleanup value must be a boolean/
+      end
+    end
+
+    it "errors if the no_version_update paramater is NOT a boolean value" do
+      in_dir do |working_dir|
+        expect do
+          command.run(working_dir, {
+            "source" => {
+              "target" => "http://bosh.example.com",
+              "username" => "bosh-username",
+              "password" => "bosh-password",
+              "deployment" => "bosh-deployment",
+            },
+            "params" => {
+              "manifest" => "deployment.yml",
+              "stemcells" => [],
+              "releases" => [],
+              "no_version_update" => 1
+            }
+          })
+        end.to raise_error /given no_version_update value must be a boolean/
       end
     end
 
