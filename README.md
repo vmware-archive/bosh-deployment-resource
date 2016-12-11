@@ -70,7 +70,7 @@ the UUID returned by the targeted director.
 
 * `cleanup`: *Optional* An boolean that specifies if a bosh cleanup should be
   run before deployment. Defaults to false.
-
+* `no_redact`: *Optional* Removes redacted from Bosh output. Defaults to false.
 * `target_file`: *Optional.* Path to a file containing a BOSH director address.
   This allows the target to be determined at runtime, e.g. by acquiring a BOSH
   lite instance using the [Pool

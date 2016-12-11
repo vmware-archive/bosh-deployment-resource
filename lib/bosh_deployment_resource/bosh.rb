@@ -12,6 +12,7 @@ module BoshDeploymentResource
       @command_runner = command_runner
     end
 
+
     def upload_stemcell(path)
       bosh("upload stemcell #{path} --skip-if-exists")
     end
@@ -20,8 +21,12 @@ module BoshDeploymentResource
       bosh("upload release #{path} --skip-if-exists")
     end
 
-    def deploy(manifest_path)
-      bosh("-d #{manifest_path} deploy")
+    def deploy(manifest_path,no_redact=false)
+      if no_redact
+          bosh("-d #{manifest_path} deploy --no-redact")
+      else
+          bosh("-d #{manifest_path} deploy")
+      end
     end
 
     def download_manifest(deployment_name, manifest_path)

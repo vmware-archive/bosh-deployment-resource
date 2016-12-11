@@ -41,8 +41,9 @@ module BoshDeploymentResource
       end
 
       new_manifest = manifest.write!
+      no_redact = request.fetch("params")["no_redact"] || false
 
-      bosh.deploy(new_manifest.path)
+      bosh.deploy(new_manifest.path,no_redact)
 
       response = {
         "version" => {
@@ -79,6 +80,12 @@ module BoshDeploymentResource
       when nil, true, false
       else
         raise "given no_version_update value must be a boolean"
+      end
+
+      case request.fetch("params")["no_redact"]
+      when nil, true, false
+      else
+        raise "given no_redact value must be a boolean"
       end
 
       ["manifest", "stemcells", "releases"].each do |field|
