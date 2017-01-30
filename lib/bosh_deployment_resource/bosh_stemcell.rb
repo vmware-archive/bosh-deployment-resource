@@ -18,7 +18,7 @@ module BoshDeploymentResource
 
     def os
       # old stemcells don't have os
-      manifest["os"]
+      manifest["operating_system"] || manifest["os"]
     end
 
     def version

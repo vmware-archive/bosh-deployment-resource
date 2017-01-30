@@ -82,7 +82,7 @@ module BoshDeploymentResource
     end
 
     def no_release_found(name)
-        Proc.new { raise "#{name} can not be found in manifest releases" }
+      Proc.new { raise "#{name} can not be found in manifest releases" }
     end
 
     def latest_stemcells
