@@ -64,7 +64,8 @@ the UUID returned by the targeted director.
   stemcell versions.
 
 * `releases`: *Required.* An array of globs that should point to where the
-  releases used in the deployment can be found.
+  releases used in the deployment can be found. Release entries in the
+  manifest will be updated to the actual provided release versions.
 
 * `cleanup`: *Optional* An boolean that specifies if a bosh cleanup should be
   run before deployment. Defaults to false.
