@@ -29,7 +29,7 @@ module BoshDeploymentResource
 
       Archive::Tar::Minitar::Reader.open(tgz) do |reader|
         reader.each_entry do |entry|
-          next unless File.basename(entry.full_name) == "release.MF"
+          next unless File.basename(entry.full_name) == "release.MF" && entry.full_name.match('PaxHeader/release.MF').nil?
 
           return entry.read
         end
