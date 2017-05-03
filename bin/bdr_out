@@ -11,19 +11,24 @@ source = request.fetch("source")
 params = request.fetch("params")
 
 target_file = params["target_file"]
+if target_file
+  source["target"] = File.read(File.expand_path(target_file, working_dir)).strip
+  STDOUT.puts "target_file is deprecated in favor of director_file, you've been warned"
+end
 
-target =
-  if target_file
-    File.read(File.expand_path(target_file, working_dir)).strip
-  else
-    source.fetch("target")
-  end
+director_file = params["director_file"]
+if director_file
+  director = YAML.load(File.read(File.expand_path(director_file, working_dir)))
+  source["target"] = director["target"]
+  source["username"] = director["username"] || source["username"]
+  source["password"] = director["password"] || source["password"]
+end
 
 auth = BoshDeploymentResource::Auth.parse(source)
 ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])
 
 bosh = BoshDeploymentResource::Bosh.new(
-  target,
+  source.fetch("target"),
   ca_cert,
   auth
 )

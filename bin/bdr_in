@@ -8,13 +8,16 @@ working_dir = ARGV[0]
 request = JSON.parse(STDIN.read)
 
 source = request.fetch("source")
+
+source["username"] ||= request["version"]["username"] || ""
+source["password"] ||= request["version"]["password"] || ""
+source["target"] ||= request["version"]["target"] || ""
+
 auth = BoshDeploymentResource::Auth.parse(source)
 ca_cert = BoshDeploymentResource::CaCert.new(source["ca_cert"])
 
-target = source["target"] || request["version"]["target"] || ""
-
 bosh = BoshDeploymentResource::Bosh.new(
-  target,
+  source["target"],
   ca_cert,
   auth
 )
