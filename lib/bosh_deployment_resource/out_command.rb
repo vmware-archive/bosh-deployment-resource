@@ -13,6 +13,9 @@ module BoshDeploymentResource
       validate! request
 
       bosh.cleanup if request.fetch("params")["cleanup"].equal? true
+
+      no_version_update = request.fetch("params")["no_version_update"] .equal? true
+
       stemcells = []
       releases = []
 
@@ -25,14 +28,13 @@ module BoshDeploymentResource
       manifest.validate_stemcells(stemcells)
 
       stemcells.each do |stemcell|
-        manifest.use_stemcell(stemcell)
+        manifest.use_stemcell(stemcell) unless no_version_update
         bosh.upload_stemcell(stemcell.path)
       end
 
       find_releases(working_dir, request).each do |release_path|
         release = BoshRelease.new(release_path)
-        manifest.use_release(release)
-
+        manifest.use_release(release) unless no_version_update
         bosh.upload_release(release_path)
 
         releases << release
@@ -72,6 +74,18 @@ module BoshDeploymentResource
       when nil, true, false
       else
         raise "given cleanup value must be a boolean"
+      end
+
+      case request.fetch("params")["no_version_update"]
+      when nil, true, false
+      else
+        raise "given no_version_update value must be a boolean"
+      end
+
+      case request.fetch("params")["no_redact"]
+      when nil, true, false
+      else
+        raise "given no_redact value must be a boolean"
       end
 
       ["manifest", "stemcells", "releases"].each do |field|

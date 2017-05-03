@@ -67,6 +67,8 @@ the UUID returned by the targeted director.
   releases used in the deployment can be found. Release entries in the
   manifest will be updated to the actual provided release versions.
 
+* `no_version_update`: *Optional* This flag avoids that the manifest is modified to use the stemcell or bosh releases provided as blobs.  Defaults set to false.
+
 * `cleanup`: *Optional* An boolean that specifies if a bosh cleanup should be
   run before deployment. Defaults to false.
 * `no_redact`: *Optional* Removes redacted from Bosh output. Defaults to false.
