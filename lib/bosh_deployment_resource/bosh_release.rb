@@ -25,6 +25,14 @@ module BoshDeploymentResource
     end
 
     def manifest_file_contents
+      if yaml_release?
+        File.read(path)
+      else
+        tar_manifest
+      end
+    end
+
+    def tar_manifest
       tgz = Zlib::GzipReader.new(File.open(path, 'rb'))
 
       Archive::Tar::Minitar::Reader.open(tgz) do |reader|
@@ -38,6 +46,10 @@ module BoshDeploymentResource
       raise "could not find release.MF"
     ensure
       tgz.close if tgz
+    end
+
+    def yaml_release?
+      File.extname(path) == ".yml"
     end
 
     attr_reader :path
