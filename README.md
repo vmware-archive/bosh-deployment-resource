@@ -49,7 +49,7 @@ When using BOSH with [UAA authentication](https://bosh.io/docs/director-users-ua
 ### `out`: Deploy a BOSH deployment
 
 This will upload any given stemcells and releases, lock them down in the
-deployment manifest and then deploy.
+deployment manifest, update the cloud config, and then deploy.
 
 If the manifest does not specify a `director_uuid`, it will be filled in with
 the UUID returned by the targeted director.
@@ -67,9 +67,13 @@ the UUID returned by the targeted director.
   releases used in the deployment can be found. Release entries in the
   manifest will be updated to the actual provided release versions.
 
+* `cloud_config`: *Optional.* Path to a BOSH cloud config file.
+
 * `cleanup`: *Optional* An boolean that specifies if a bosh cleanup should be
   run before deployment. Defaults to false.
+
 * `no_redact`: *Optional* Removes redacted from Bosh output. Defaults to false.
+
 * `target_file`: *Optional.* Path to a file containing a BOSH director address.
   This allows the target to be determined at runtime, e.g. by acquiring a BOSH
   lite instance using the [Pool

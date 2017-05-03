@@ -21,6 +21,10 @@ module BoshDeploymentResource
       bosh("upload release #{path} --skip-if-exists")
     end
 
+    def update_cloud_config(cloud_config_path)
+      bosh("update cloud-config #{cloud_config_path}")
+    end
+
     def deploy(manifest_path,no_redact=false)
       if no_redact
           bosh("-d #{manifest_path} deploy --no-redact")

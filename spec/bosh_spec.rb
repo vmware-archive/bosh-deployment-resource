@@ -90,6 +90,14 @@ describe BoshDeploymentResource::Bosh do
     end
   end
 
+  describe ".update_cloud_config" do
+    it "updates the cloud config" do
+      expect(command_runner).to receive(:run).with(%{bosh -n --color -t #{target} update cloud-config /path/to/a/cloud_config.yml}, { "BOSH_USER" => username, "BOSH_PASSWORD" => password }, {})
+
+      bosh.update_cloud_config("/path/to/a/cloud_config.yml")
+    end
+  end
+
   context "when ca_cert_path is provided" do
     let(:ca_cert) { BoshDeploymentResource::CaCert.new("fake-ca-cert-content") }
     after { ca_cert.cleanup }
