@@ -1,3 +1,11 @@
+**Deprecation Notice**:
+
+We are in the process of deprecating this resource in favor of https://github.com/cloudfoundry/bosh-deployment-resource
+
+Please begin to update your pipelines appropriately.
+
+---
+
 # BOSH Deployment Resource
 
 An output only resource (at the moment) that will upload stemcells and releases
